@@ -6,9 +6,10 @@ import { RegisterDto } from '@infra/dto/auth/RegisterDto.ts';
 import { ResendForgotPasswordDto } from '@infra/dto/auth/ResendForgotPasswordDto.ts';
 import { ResetPasswordDto } from '@infra/dto/auth/ResetPasswordDto.ts';
 import { SignInDto } from '@infra/dto/auth/SignInDto.ts';
+import { SignInResponseDto } from '@infra/dto/auth/SignInResponseDto';
 
 const signIn = async (signInDto: SignInDto) => {
-  return http({
+  return http<SignInResponseDto>({
     url: '/auth/login',
     method: 'POST',
     data: signInDto,

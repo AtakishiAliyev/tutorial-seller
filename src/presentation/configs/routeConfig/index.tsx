@@ -4,6 +4,7 @@ import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 
 const HomePage = lazy(() => import('@presentation/pages/Home'));
+const LoginPage = lazy(() => import('@presentation/pages/Login'));
 
 export const routeConfig: RouteObject[] = [
   {
@@ -19,6 +20,10 @@ export const routeConfig: RouteObject[] = [
         ),
       },
     ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
   },
   {
     path: '*',

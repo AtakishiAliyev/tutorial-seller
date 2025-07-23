@@ -1,4 +1,4 @@
-import {Input} from "@headlessui/react";
+import LoginForm from '@presentation/features/auth/LoginForm.tsx';
 
 const Home = () => {
   // Sample course data - you can make this dynamic later
@@ -33,7 +33,6 @@ const Home = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Browse products</h1>
-
           {/* Search and Sort */}
           <div className="flex flex-col justify-between sm:flex-row gap-4 items-stretch sm:items-center">
             {/* Search Bar */}
@@ -41,7 +40,6 @@ const Home = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/*<SearchOutlined className="h-4 w-4 text-gray-400" />*/}
               </div>
-              <Input name="full_name" type="text" />
               <input
                 type="text"
                 placeholder="Search product names"
@@ -86,6 +84,7 @@ const Home = () => {
           </div>
         )}
       </div>
+      <LoginForm />
     </div>
   );
 };

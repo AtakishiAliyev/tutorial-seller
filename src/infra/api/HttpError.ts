@@ -1,8 +1,8 @@
 export class HttpError {
   statusCode: number;
-  message: string | string[];
+  message: string[];
 
-  constructor(message: string | string[], statusCode: number) {
+  constructor(message: string[], statusCode: number) {
     this.statusCode = statusCode;
     this.message = message;
   }
