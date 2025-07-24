@@ -45,6 +45,18 @@ const InputGroup = ({
 
 const MemoizedInputGroup = memo(InputGroup);
 
+interface InputRowProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const InputRow = ({ children, className }: InputRowProps) => {
+  // Используем fieldset для семантической группировки полей
+  return <fieldset className={cn('flex w-full items-start gap-4', className)}>{children}</fieldset>;
+};
+
+const MemoizedInputRow = memo(InputRow);
+
 // Input.Label
 interface InputLabelProps {
   children: ReactNode;
@@ -150,9 +162,16 @@ const MemoizedInputComponent = memo(InputComponent);
 
 export const Input = Object.assign(MemoizedInputComponent, {
   Group: MemoizedInputGroup,
+  Row: MemoizedInputRow,
   Label: MemoizedInputLabel,
   ErrorMessage: MemoizedInputErrorMessage,
   HelperMessage: MemoizedInputHelperMessage,
 });
 
-export type { InputErrorMessageProps, InputGroupProps, InputHelperMessageProps, InputLabelProps };
+export type {
+  InputErrorMessageProps,
+  InputGroupProps,
+  InputHelperMessageProps,
+  InputLabelProps,
+  InputRowProps,
+};

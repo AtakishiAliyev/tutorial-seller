@@ -1,5 +1,5 @@
-import { routeConfig } from '@presentation/configs/routeConfig';
-import { tanstackQueryClient } from '@presentation/configs/tanstackQueryConfig';
+import { routeConfig } from '@presentation/shared/configs/routeConfig';
+import { tanstackQueryClient } from '@presentation/shared/configs/tanstackQueryConfig';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRoutes } from 'react-router-dom';

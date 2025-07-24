@@ -1,5 +1,5 @@
 import useGetMe from '@business/services/user/useGetMe.ts';
-import Fallback from '@presentation/ui/Fallback.tsx';
+import Fallback from '@presentation/shared/ui/Fallback.tsx';
 import { FC, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 

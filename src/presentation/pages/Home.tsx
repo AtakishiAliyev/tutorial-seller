@@ -1,4 +1,4 @@
-import LoginForm from '@presentation/features/auth/LoginForm.tsx';
+import LoginForm from '@presentation/widgets/auth/LoginForm.tsx';
 
 const Home = () => {
   // Sample course data - you can make this dynamic later

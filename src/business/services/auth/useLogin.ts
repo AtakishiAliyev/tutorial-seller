@@ -1,3 +1,4 @@
+import { ServicesGeneralProps } from '@business/shared/types/ServicesGeneralProps.ts';
 import { setAccessToken } from '@business/shared/utils/setAccessToken';
 import { showToasts } from '@business/shared/utils/showToasts';
 import { LoginValidationSchema } from '@business/validations/auth/LoginValidationSchema';
@@ -6,7 +7,7 @@ import { HttpError } from '@infra/api/HttpError';
 import { SignInDto } from '@infra/dto/auth/SignInDto';
 import { SignInResponseDto } from '@infra/dto/auth/SignInResponseDto';
 import authRepository from '@infra/repositories/auth';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { dFunc } from 'd-func';
 import { BaseSyntheticEvent } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
@@ -19,20 +20,17 @@ type UseLoginReturn = {
   form: UseFormReturn<SignInDto>;
 };
 
-type UseLoginProps = {
-  afterSubmit?: () => void;
-  afterError?: () => void;
+export type UseLoginProps = ServicesGeneralProps & {
   redirectUrl?: string;
-  showNotifications?: boolean;
 };
 
 const useLogin = ({
-  afterSubmit = dFunc,
+  afterSuccess = dFunc,
   afterError = dFunc,
   redirectUrl = '/',
-  showNotifications = false,
+  showSuccessNotification = true,
+  showErrorNotification = false,
 }: UseLoginProps): UseLoginReturn => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { error, isPending, mutateAsync, isError } = useMutation<
     SignInResponseDto,
@@ -42,16 +40,12 @@ const useLogin = ({
     mutationFn: authRepository.signIn,
     onSuccess: async data => {
       setAccessToken(data.accessToken);
-      await queryClient.refetchQueries({
-        queryKey: ['users', 'me'],
-        exact: false,
-      });
-
-      if (showNotifications) showToasts('Siz hesabınıza uğurla daxil oldunuz', 'success');
+      if (showSuccessNotification) showToasts('Siz hesabınıza uğurla daxil oldunuz', 'success');
       navigate(redirectUrl);
+      if (afterSuccess) afterSuccess();
     },
     onError: async resError => {
-      if (showNotifications) showToasts(resError.message, 'error');
+      if (showErrorNotification) showToasts(resError.message, 'error');
       if (afterError) afterError();
     },
   });
@@ -64,7 +58,6 @@ const useLogin = ({
 
   const handleSubmit = form.handleSubmit(async data => {
     await mutateAsync(data);
-    if (afterSubmit) afterSubmit();
   });
 
   return {
