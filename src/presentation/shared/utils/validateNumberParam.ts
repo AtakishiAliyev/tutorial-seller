@@ -1,5 +1,5 @@
 export const validateNumberParam = (
-  value: string | null | undefined,
+  value: string | null | undefined | number,
   defaultValue: number,
 ): number => {
   if (value === null) return defaultValue;

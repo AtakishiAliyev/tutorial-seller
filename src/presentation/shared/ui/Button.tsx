@@ -74,11 +74,9 @@ const Button = (props: CombinedButtonProps) => {
   const combinedClasses = cn(baseClasses, variantClasses, className);
 
   if (isLink(props)) {
-    // Для ссылок рендерим <Link>
     const { to, ...linkProps } = props;
 
-    // Удаляем специфичные для кнопки пропсы из linkProps
-    const { htmlType: _htmlType, ...cleanLinkProps } = linkProps;
+    const { htmlType: _htmlType, className: _className, ...cleanLinkProps } = linkProps;
 
     return (
       <Link to={to} className={combinedClasses} aria-disabled={disabled} {...cleanLinkProps} />

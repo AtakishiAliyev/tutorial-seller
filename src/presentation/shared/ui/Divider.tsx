@@ -1,4 +1,4 @@
-import { Text } from '@presentation/shared/ui/Typography.tsx';
+import Text from '@presentation/shared/ui/Typography.tsx';
 import { cn } from '@presentation/shared/utils/cn.ts';
 import { memo } from 'react';
 

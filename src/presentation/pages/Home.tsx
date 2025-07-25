@@ -1,34 +1,9 @@
-import LoginForm from '@presentation/widgets/auth/LoginForm.tsx';
+import CourseList from '@presentation/widgets/course/CourseList.tsx';
+import PublicCoursesAdapter from '@presentation/widgets/course/PublicCoursesAdapter.tsx';
 
 const Home = () => {
-  // Sample course data - you can make this dynamic later
-  const courses = [
-    {
-      id: 1,
-      title: 'SIFIRDAN ZIRVEYE YOUTUBE OTOMASYONU',
-      instructor: 'Akademi Destek 2',
-      type: 'Course',
-      nextLesson: 'Algoritma Güncellemesi ve En Çok...',
-      progress: 94,
-      thumbnail:
-        'https://static-media.hotmart.com/B5i1rbX1m-JXZrQxbOzA5C5HrDo=/848x478/https://uploads.teachablecdn.com/attachments/vSeS9ThvTBycyRQCszKf_SIFIRDAN+ZI%CC%87RVEYE+YT+KAPAG%CC%86II.jpg',
-      status: 'in-progress',
-    },
-    {
-      id: 2,
-      title: 'SIFIRDAN ZIRVEYE YOUTUBE OTOMASYONU',
-      instructor: 'Code Academy',
-      type: 'Course',
-      nextLesson: 'React Router ve Navigation...',
-      progress: 67,
-      thumbnail:
-        'https://static-media.hotmart.com/B5i1rbX1m-JXZrQxbOzA5C5HrDo=/848x478/https://uploads.teachablecdn.com/attachments/vSeS9ThvTBycyRQCszKf_SIFIRDAN+ZI%CC%87RVEYE+YT+KAPAG%CC%86II.jpg',
-      status: 'in-progress',
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -65,27 +40,11 @@ const Home = () => {
         </div>
 
         {/* Course Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/*{courses.map(course => (*/}
-          {/*  // <Card key={course.id} course={course} />*/}
-          {/*))}*/}
-        </div>
-
-        {/* No Results */}
-        {courses.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              {/*<SearchOutlined className="text-gray-400 text-xl" />*/}
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
-            <p className="text-gray-600">
-              Try adjusting your search or filter to find what you're looking for.
-            </p>
-          </div>
-        )}
+        <PublicCoursesAdapter>
+          <CourseList />
+        </PublicCoursesAdapter>
       </div>
-      <LoginForm />
-    </div>
+    </main>
   );
 };
 

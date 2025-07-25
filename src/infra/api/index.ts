@@ -1,11 +1,11 @@
 import { HttpError } from '@infra/api/HttpError.ts';
 import { BackendErrorResponse } from '@infra/api/IBackendError.ts';
-import { deepTrim } from '@infra/utils/deepTrim.ts';
-import { deleteAccessToken } from '@infra/utils/deleteAccessToken.ts';
-import { getAccessToken } from '@infra/utils/getAccessToken.ts';
-import { removeEmptyParams } from '@infra/utils/removeEmptyParams.ts';
-import removeFalsyObjKeys from '@infra/utils/removeFalsyObjKeys.ts';
-import { stringify } from '@infra/utils/stringify.ts';
+import { deepTrim } from '@infra/shared/utils/deepTrim.ts';
+import { deleteAccessToken } from '@infra/shared/utils/deleteAccessToken.ts';
+import { getAccessToken } from '@infra/shared/utils/getAccessToken.ts';
+import { removeEmptyParams } from '@infra/shared/utils/removeEmptyParams.ts';
+import removeFalsyObjKeys from '@infra/shared/utils/removeFalsyObjKeys.ts';
+import { stringify } from '@infra/shared/utils/stringify.ts';
 import axios, { AxiosError, InternalAxiosRequestConfig, Method } from 'axios';
 
 export const api = axios.create({
@@ -81,11 +81,12 @@ export const http = async <T, D = unknown>({
       if (error?.response?.status === 401) deleteAccessToken();
 
       throw new HttpError(
-        error.response?.data?.message || 'Unexpected error',
+        // @ts-expect-error Backend returning an array of error messages always
+        error.response?.data?.message || ['Unexpected error'],
         error.response?.status || 500,
       );
     }
 
-    throw new HttpError('Unexpected error', 500);
+    throw new HttpError(['Unexpected error'], 500);
   }
 };

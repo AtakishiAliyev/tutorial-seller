@@ -1,5 +1,5 @@
 import { showToasts } from '@business/shared/utils/showToasts.ts';
-import { deleteAccessToken } from '@infra/utils/deleteAccessToken.ts';
+import { deleteAccessToken } from '@infra/shared/utils/deleteAccessToken.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
