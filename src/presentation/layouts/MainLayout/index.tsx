@@ -1,11 +1,13 @@
+import Header from '@presentation/layouts/MainLayout/Header.tsx';
 import { memo } from 'react';
 import { Outlet } from 'react-router-dom';
 
 const MainLayout = () => {
   return (
-    <div>
+    <>
+      <Header />
       <Outlet />
-    </div>
+    </>
   );
 };
 

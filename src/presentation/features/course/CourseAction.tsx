@@ -30,10 +30,18 @@ const CourseAction: FC<CourseActionProps> = props => {
     );
   }
 
-  if (!isOwned) {
+  if (isOwned?.isOwned === false) {
     return (
       <Button variant="primary" className="w-full">
         Buy now
+      </Button>
+    );
+  }
+
+  if (isOwned?.isOwned === true && isOwned?.isActive === false) {
+    return (
+      <Button variant="primary" disabled={true} className="w-full">
+        You don't have access to this course. Contact with admin
       </Button>
     );
   }

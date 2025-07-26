@@ -1,3 +1,4 @@
+import AuthorizedOnlyRoute from '@presentation/guards/AuthorizedOnlyRoute.tsx';
 import CheckRouteParams from '@presentation/guards/CheckRouteParams.tsx';
 import UnAuthorizedOnlyRoute from '@presentation/guards/UnAuthorizedOnlyRoute.tsx';
 import MainLayout from '@presentation/layouts/MainLayout';
@@ -11,6 +12,7 @@ const RegisterPage = lazy(() => import('@presentation/pages/auth/Register.tsx'))
 const ConfirmEmailPage = lazy(() => import('@presentation/pages/auth/ConfirmEmail.tsx'));
 const ForgotPasswordPage = lazy(() => import('@presentation/pages/auth/ForgotPassword.tsx'));
 const ResetPasswordPage = lazy(() => import('@presentation/pages/auth/ResetPassword.tsx'));
+const CourseWatchPage = lazy(() => import('@presentation/pages/CourseWatch.tsx'));
 
 export const routeConfig: RouteObject[] = [
   {
@@ -23,6 +25,16 @@ export const routeConfig: RouteObject[] = [
           <Suspense fallback={<Fallback isFullScreen={true} />}>
             <HomePage />
           </Suspense>
+        ),
+      },
+      {
+        path: '/courses/watch/:courseSlug',
+        element: (
+          <AuthorizedOnlyRoute>
+            <Suspense fallback={<Fallback isFullScreen={true} />}>
+              <CourseWatchPage />
+            </Suspense>
+          </AuthorizedOnlyRoute>
         ),
       },
     ],

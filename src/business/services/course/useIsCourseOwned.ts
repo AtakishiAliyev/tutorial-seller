@@ -18,7 +18,7 @@ const useIsCourseOwned = ({ courseSlug }: UseIsCourseOwnedProps) => {
   });
 
   return {
-    isOwned: data?.isOwned,
+    isOwned: data,
     loading: isLoading,
     error,
   };
