@@ -76,8 +76,7 @@ export function useVisibility(): VisibilityContextValue {
 interface VisibilityTargetProps {
   children: ReactElement;
   targetKey: string;
-  // …любой дополнительный пропс, например onClick
-  [prop: string]: any;
+  [prop: string]: unknown;
 }
 
 export const VisibilityTarget: FC<VisibilityTargetProps> = ({

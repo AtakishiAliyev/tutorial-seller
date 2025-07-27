@@ -3,6 +3,7 @@ import { GetCourseDetailDto } from '@infra/dto/course/GetCourseDetailDto.ts';
 import { GetCoursesQueryDto } from '@infra/dto/course/GetCoursesQueryDto.ts';
 import { GetPublicCourseDto } from '@infra/dto/course/GetPublicCourseDto.ts';
 import { IsCourseOwnedResponseDto } from '@infra/dto/course/IsCourseOwnedResponseDto.ts';
+import { SaveLessonProgressDto } from '@infra/dto/course/SaveLessonProgressDto.ts';
 import { PaginatedResult } from '@infra/shared/dto/PaginatedResult.ts';
 import { convertToHttpParams, httpParamsPresets } from '@infra/shared/utils/convertToHttpParams.ts';
 
@@ -28,10 +29,11 @@ const getCourseDetails = async (courseSlug: string): Promise<GetCourseDetailDto>
   });
 };
 
-const saveLessonProgress = async (lessonId: string) => {
+const saveLessonProgress = async (lessonId: string, dto: SaveLessonProgressDto): Promise<void> => {
   return http({
     url: `/lessons-progresses/${lessonId}`,
     method: 'POST',
+    data: dto,
   });
 };
 

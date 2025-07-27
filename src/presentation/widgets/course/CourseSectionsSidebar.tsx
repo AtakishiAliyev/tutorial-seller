@@ -1,5 +1,7 @@
 import useGetCourseDetail from '@business/services/course/useGetCourseDetail.ts';
+import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore.ts';
 import CourseLesson from '@presentation/entities/course/CourseLesson.tsx';
+import CourseProgressTracker from '@presentation/entities/course/CourseProgressTracker';
 import CourseSection from '@presentation/entities/course/CourseSection.tsx';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import {
@@ -10,14 +12,11 @@ import {
 import { ChevronDown } from 'lucide-react';
 import { FC, memo } from 'react';
 
-type CourseSectionsSidebarProps = {
-  courseSlug: string;
-};
+const CourseSectionsSidebar: FC = () => {
+  const courseSlug = useWatchCourseStore(state => state.courseSlug);
+  const { error, loading, data } = useGetCourseDetail({ courseSlug: courseSlug! });
 
-const CourseSectionsSidebar: FC<CourseSectionsSidebarProps> = ({ courseSlug }) => {
-  const { error, loading, data } = useGetCourseDetail({ courseSlug });
-
-  if (loading) {
+  if (loading || !data) {
     // TODO: Add loading skeleton
     return (
       <div className="flex items-center justify-center h-full">
@@ -33,8 +32,8 @@ const CourseSectionsSidebar: FC<CourseSectionsSidebarProps> = ({ courseSlug }) =
   }
 
   return (
-    <aside className="w-80 sm:w-[25vw] h-[100dvh]">
-      <div className="w-full h-[100dvh]  bg-white shadow-sm border-r border-gray-200 overflow-y-auto scrollbar-hide flex flex-col">
+    <aside className="w-80 sm:w-[35vw] lg:w-[25vw] relative">
+      <div className="sticky h-[100dvh] top-0 w-full right-0 left-0 bottom-0 bg-white shadow-sm border-r border-gray-200 overflow-y-auto scrollbar-hide flex flex-col">
         <div className="flex-1 p-4 sm:p-6">
           {/* Mobile Close Button */}
           {/*<div className="flex items-center justify-between mb-6 lg:block">*/}
@@ -66,6 +65,14 @@ const CourseSectionsSidebar: FC<CourseSectionsSidebarProps> = ({ courseSlug }) =
               ))}
             </VisibilityProvider>
           </div>
+        </div>
+        <div className="border-t border-gray-200 p-4 sm:p-6">
+          <CourseProgressTracker
+            completedDurationSeconds={data.userTotalProgress}
+            completedLessons={data.totalCompletedLessonsCount}
+            totalDurationSeconds={data.totalDuration}
+            totalLessons={data.totalLessonsCount}
+          />
         </div>
       </div>
     </aside>

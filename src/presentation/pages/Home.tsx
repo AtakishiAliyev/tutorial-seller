@@ -14,7 +14,7 @@ const Home = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">All Courses</h2>
             <div className="flex justify-between gap-2 w-full">
               <CourseFilter
-                className="w-full"
+                className="w-full flex md:flex-row flex-col"
                 searchSlot={
                   <SearchInput
                     placeholder="Search course..."
@@ -23,7 +23,7 @@ const Home = () => {
                     queryKey="search"
                   />
                 }
-                sortSlot={<SortDropdown className="w-fit" queryKey="sort" />}
+                sortSlot={<SortDropdown className="w-full md:w-fit" queryKey="sort" />}
               />
             </div>
           </div>

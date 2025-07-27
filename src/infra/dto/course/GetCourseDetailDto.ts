@@ -24,7 +24,7 @@ export interface Lesson {
   order: number;
   video: Video | null;
   resources: Resource[];
-  userProgress: UserProgress | null;
+  userProgresses: UserProgress | null;
 }
 
 export interface Video {

@@ -25,7 +25,7 @@ const AccountBox = () => {
     return (
       <div
         className={cn(
-          'w-8 h-8 rounded-full flex items-center justify-center text-white font-medium',
+          'w-8 h-8 hidden md:flex rounded-full items-center justify-center text-white font-medium',
           bgClass,
         )}
       >
@@ -49,8 +49,11 @@ const AccountBox = () => {
         <>
           {renderAvatar()}
           <Link to="/profile">
-            <Text size="p" weight="medium" color="secondary">
+            <Text className="md:block hidden" size="p" weight="medium" color="secondary">
               {me.name} {me.surname}
+            </Text>
+            <Text className="block md:hidden" size="p" weight="medium" color="secondary">
+              Profile
             </Text>
           </Link>
         </>

@@ -11,7 +11,9 @@ interface FormCardProps {
 
 const FormCard = ({ title, subtitle, children, className }: FormCardProps) => {
   return (
-    <div className={cn('bg-white rounded-lg shadow-sm border border-gray-200 p-8', className)}>
+    <div
+      className={cn('bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-8', className)}
+    >
       {(title || subtitle) && (
         <div className="text-center mb-8">
           {title && (
