@@ -34,42 +34,30 @@ const LessonsNavigate = () => {
   const isPrevDisabled = !prevLesson;
 
   return (
-    <div className="bg-white border-b border-gray-200 py-4 sm:py-6">
-      <div className="flex items-center justify-between">
-        <div className="hidden sm:flex items-center space-x-4">
-          <Button
-            variant="outline"
-            disabled={isPrevDisabled}
-            onClick={() => {
-              if (prevLesson) {
-                setCurrentLesson(prevLesson);
-              }
-            }}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="primary"
-            disabled={isNextDisabled}
-            onClick={() => {
-              if (nextLesson) {
-                setCurrentLesson(nextLesson);
-              }
-            }}
-          >
-            Next Lesson
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Buttons */}
-      <div className="sm:hidden mt-4 flex space-x-3">
-        <button className="flex-1 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border border-gray-300 rounded-lg">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2 md:gap-4">
+        <Button
+          variant="outline"
+          disabled={isPrevDisabled}
+          onClick={() => {
+            if (prevLesson) {
+              setCurrentLesson(prevLesson);
+            }
+          }}
+        >
           Previous
-        </button>
-        <button className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+        </Button>
+        <Button
+          variant="primary"
+          disabled={isNextDisabled}
+          onClick={() => {
+            if (nextLesson) {
+              setCurrentLesson(nextLesson);
+            }
+          }}
+        >
           Next Lesson
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ const AccountBox = () => {
               {me.name} {me.surname}
             </Text>
             <Text className="block md:hidden" size="p" weight="medium" color="secondary">
-              Profile
+              Goto Profile
             </Text>
           </Link>
         </>

@@ -92,9 +92,9 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
           })();
         }
 
-        console.log("Current lesson user progresses:", currentLesson?.userProgresses);
-        console.log("Current video time:", currentVideoTime);
-        console.log("Current video duration:", video.duration);
+        console.log('Current lesson user progresses:', currentLesson?.userProgresses);
+        console.log('Current video time:', currentVideoTime);
+        console.log('Current video duration:', video.duration);
 
         if (
           video.duration > 0 &&
@@ -243,7 +243,8 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
               console.error('Fatal media error encountered');
               try {
                 hls?.recoverMediaError();
-              } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              } catch (_error) {
                 console.error('Cannot recover from media error');
               }
               break;

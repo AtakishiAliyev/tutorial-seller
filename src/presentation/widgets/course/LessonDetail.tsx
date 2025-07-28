@@ -3,8 +3,11 @@ import { useWatchCourseStore } from '@business/services/course/useWatchCourseSto
 import LessonResources from '@presentation/features/course/LessonResources';
 import LessonsNavigate from '@presentation/features/course/LessonsNavigate';
 import VideoPlayer from '@presentation/features/course/VideoPlayer';
+import Button from '@presentation/shared/ui/Button.tsx';
 import ErrorBox from '@presentation/shared/ui/ErrorBox';
-import { FC, memo, useEffect } from 'react';
+import { useVisibility } from '@presentation/shared/ui/Visibility.tsx';
+import { Menu } from 'lucide-react';
+import { FC, memo, useCallback, useEffect } from 'react';
 
 const LessonDetail: FC = () => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
@@ -12,6 +15,11 @@ const LessonDetail: FC = () => {
   const courseSlug = useWatchCourseStore(state => state.courseSlug);
   const setCurrentLesson = useWatchCourseStore(state => state.setCurrentLesson);
   const { loading, data, error } = useGetCourseDetail({ courseSlug: courseSlug! });
+  const { set } = useVisibility();
+
+  const handleCourseSidebarOpen = useCallback(() => {
+    set('course-sidebar', true);
+  }, [set]);
 
   // Используем useEffect для восстановления последнего урока
   useEffect(() => {
@@ -50,7 +58,16 @@ const LessonDetail: FC = () => {
 
   return (
     <div className="flex flex-col flex-1 px-5">
-      <LessonsNavigate />
+      <div className="bg-white flex items-center border-b border-gray-200 py-4 sm:py-6 justify-between gap-2">
+        <Button
+          onClick={handleCourseSidebarOpen}
+          className="w-fit md:hidden block"
+          variant="outline"
+        >
+          <Menu />
+        </Button>
+        <LessonsNavigate />
+      </div>
       <VideoPlayer
         lessonId={currentLesson.id}
         lastWatchedTime={currentLesson?.userProgresses?.progressSeconds}

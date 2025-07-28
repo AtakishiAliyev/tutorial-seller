@@ -1,5 +1,6 @@
 import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore.ts';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
+import { VisibilityProvider } from '@presentation/shared/ui/Visibility.tsx';
 import CourseSectionsSidebar from '@presentation/widgets/course/CourseSectionsSidebar.tsx';
 import LessonDetail from '@presentation/widgets/course/LessonDetail.tsx';
 import { memo } from 'react';
@@ -17,8 +18,10 @@ const CourseWatch = () => {
   setCourseSlug(courseSlug);
   return (
     <main className="flex mb-2">
-      <CourseSectionsSidebar />
-      <LessonDetail />
+      <VisibilityProvider>
+        <CourseSectionsSidebar />
+        <LessonDetail />
+      </VisibilityProvider>
     </main>
   );
 };
