@@ -80,10 +80,6 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
 
         // Проверяем, прошло ли 10 секунд с последнего трекинга
         if (currentVideoTime >= lastTrackedTime + 10) {
-          console.log('Прошло 10 секунд');
-          console.log(
-            `Текущее время видео: ${Math.floor(currentVideoTime / 60)}:${(currentVideoTime % 60).toString().padStart(2, '0')}`,
-          );
           lastTrackedTimeRef.current = Math.floor(currentVideoTime / 10) * 10;
           (async () => {
             await saveLessonProgress({
@@ -91,10 +87,6 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
             });
           })();
         }
-
-        console.log('Current lesson user progresses:', currentLesson?.userProgresses);
-        console.log('Current video time:', currentVideoTime);
-        console.log('Current video duration:', video.duration);
 
         if (
           video.duration > 0 &&

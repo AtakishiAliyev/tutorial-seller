@@ -9,10 +9,15 @@ const useLogout = () => {
   const handleLogout = useCallback(async () => {
     deleteAccessToken();
     showToasts('Siz hesabınızdan uğurla çıxdınız', 'success');
-    await queryClient.refetchQueries({
-      queryKey: ['users', 'me'],
+    await queryClient.invalidateQueries({
+      queryKey: ['users'],
       exact: false,
     });
+    await queryClient.refetchQueries({
+      queryKey: ['users'],
+      exact: false,
+    });
+    queryClient.clear();
   }, [queryClient]);
 
   return {

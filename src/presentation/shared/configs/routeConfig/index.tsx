@@ -13,6 +13,8 @@ const ConfirmEmailPage = lazy(() => import('@presentation/pages/auth/ConfirmEmai
 const ForgotPasswordPage = lazy(() => import('@presentation/pages/auth/ForgotPassword.tsx'));
 const ResetPasswordPage = lazy(() => import('@presentation/pages/auth/ResetPassword.tsx'));
 const CourseWatchPage = lazy(() => import('@presentation/pages/CourseWatch.tsx'));
+const ProfilePage = lazy(() => import('@presentation/pages/Profile.tsx'));
+const NotFoundPage = lazy(() => import('@presentation/pages/NotFound.tsx'));
 
 export const routeConfig: RouteObject[] = [
   {
@@ -33,6 +35,16 @@ export const routeConfig: RouteObject[] = [
           <AuthorizedOnlyRoute>
             <Suspense fallback={<Fallback isFullScreen={true} />}>
               <CourseWatchPage />
+            </Suspense>
+          </AuthorizedOnlyRoute>
+        ),
+      },
+      {
+        path: '/profile',
+        element: (
+          <AuthorizedOnlyRoute>
+            <Suspense fallback={<Fallback isFullScreen={true} />}>
+              <ProfilePage />
             </Suspense>
           </AuthorizedOnlyRoute>
         ),
@@ -95,6 +107,10 @@ export const routeConfig: RouteObject[] = [
   },
   {
     path: '*',
-    // element: <Suspense fallback={<Fallback />}><NotFoundPage /></Suspense>,
+    element: (
+      <Suspense fallback={<Fallback />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
   },
 ];

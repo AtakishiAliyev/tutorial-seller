@@ -17,7 +17,7 @@ const AuthorizedOnlyRoute: FC<AuthorizedOnlyRouteProps> = ({ children }) => {
       </div>
     );
 
-  if (!me || error) return <Navigate to="/auth" replace />;
+  if (!me || error) return <Navigate to="/login" replace />;
 
   return <> {children}</>;
 };

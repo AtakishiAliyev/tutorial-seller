@@ -3,4 +3,5 @@ export type ServicesGeneralProps = {
   showSuccessNotification?: boolean;
   afterError?: () => void;
   afterSuccess?: () => void;
+  clearForm?: boolean;
 };

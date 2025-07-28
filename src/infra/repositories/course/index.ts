@@ -1,6 +1,7 @@
 import { http } from '@infra/api';
 import { GetCourseDetailDto } from '@infra/dto/course/GetCourseDetailDto.ts';
 import { GetCoursesQueryDto } from '@infra/dto/course/GetCoursesQueryDto.ts';
+import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
 import { GetPublicCourseDto } from '@infra/dto/course/GetPublicCourseDto.ts';
 import { IsCourseOwnedResponseDto } from '@infra/dto/course/IsCourseOwnedResponseDto.ts';
 import { SaveLessonProgressDto } from '@infra/dto/course/SaveLessonProgressDto.ts';
@@ -37,11 +38,20 @@ const saveLessonProgress = async (lessonId: string, dto: SaveLessonProgressDto):
   });
 };
 
+const getAllMyCourses = async (dto: GetCoursesQueryDto) => {
+  return http<PaginatedResult<GetOwnedCoursesResponseDto>>({
+    url: '/courses/owned',
+    method: 'GET',
+    params: convertToHttpParams(dto, httpParamsPresets.query()),
+  });
+};
+
 const courseRepository = {
   getAllCourses,
   isCourseOwned,
   getCourseDetails,
   saveLessonProgress,
+  getAllMyCourses,
 };
 
 export default courseRepository;
