@@ -10,7 +10,10 @@ const ResourceItem: FC<Resource> = ({ name, resourceUrl }) => {
   return (
     <a
       href={resourceUrl}
-      download // Этот атрибут заставляет браузер скачивать файл
+      download
+      target="_blank" // Добавляем target="_blank" для открытия в новой вкладке, если скачивание не поддерживается
+      rel="noopener noreferrer" // Безопасность при открытии в новой вкладке
+      aria-label={`Download resource: ${name}`}
       className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
     >
       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
