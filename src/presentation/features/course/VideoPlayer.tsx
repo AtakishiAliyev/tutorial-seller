@@ -560,7 +560,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
               {showSettings && (
                 <div
                   ref={settingsRef}
-                  className="absolute bottom-8 right-0 bg-black bg-opacity-95 rounded-lg p-4 min-w-48 z-50 border border-gray-700"
+                  className="absolute max-h-[250px] overflow-y-auto bottom-8 right-0 bg-black bg-opacity-95 rounded-lg p-4 min-w-48 z-50 border border-gray-700"
                   onClick={e => e.stopPropagation()} // Предотвращаем всплытие события
                 >
                   <div className="mb-4">
