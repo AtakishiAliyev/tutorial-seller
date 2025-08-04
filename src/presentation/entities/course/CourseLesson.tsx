@@ -57,13 +57,6 @@ const CourseLesson: FC<CourseLessonProps> = ({ lesson }) => {
             await saveLessonProgress({
               isCompleted: !isLessonCompleted,
             });
-            setCurrentLesson({
-              ...lesson,
-              userProgresses: {
-                ...lesson.userProgresses,
-                isCompleted: !isLessonCompleted,
-              },
-            } as Lesson);
           }}
         />
       </div>
