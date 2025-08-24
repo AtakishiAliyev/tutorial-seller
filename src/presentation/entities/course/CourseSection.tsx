@@ -29,15 +29,9 @@ const CourseSection: FC<CourseSectionProps> = ({
 }) => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
 
-  // Получаем только публичные уроки
   const publicLessons = useMemo(() => {
     return section.lessons.filter(lesson => lesson.isPublic);
   }, [section.lessons]);
-
-  // Проверяем, есть ли в секции публичные уроки
-  const hasPublicLessons = useMemo(() => {
-    return publicLessons.length > 0;
-  }, [publicLessons]);
 
   // Длительность считаем только для публичных уроков
   const sectionDuration = useMemo(() => {
@@ -46,15 +40,12 @@ const CourseSection: FC<CourseSectionProps> = ({
 
   const sectionDurationFormatted = useMemo(() => timeFormattor(sectionDuration), [sectionDuration]);
 
-  // Считаем только завершенные публичные уроки
   const completedLessonsCount = useMemo(() => {
     return publicLessons.filter(lesson => lesson.userProgresses?.isCompleted).length;
   }, [publicLessons]);
 
   // Общее количество - только публичные уроки
-  const totalLessonsCount = useMemo(() => {
-    return publicLessons.length;
-  }, [publicLessons]);
+  const totalLessonsCount = section?.lessons?.length;
 
   const isCurrentLessonInSection = useMemo(() => {
     return currentLesson && publicLessons.some(lesson => lesson.id === currentLesson.id);
@@ -70,8 +61,7 @@ const CourseSection: FC<CourseSectionProps> = ({
     return <div>Placeholder for empty section. TODO: Add empty section component</div>;
   }
 
-  // Если секция не публичная или не имеет публичных уроков, показываем как заблокированную
-  const isSectionDisabled = !section.isPublic || !hasPublicLessons;
+  const isSectionDisabled = section.isPublic;
 
   return (
     <div
@@ -99,11 +89,7 @@ const CourseSection: FC<CourseSectionProps> = ({
           </div>
           <Text size="subtitle" color={isSectionDisabled ? 'secondary' : 'muted'}>
             {completedLessonsCount} / {totalLessonsCount} | {sectionDurationFormatted}min
-            {isSectionDisabled && !section.isPublic && ' (Mövcud deyil)'}
-            {isSectionDisabled &&
-              section.isPublic &&
-              !hasPublicLessons &&
-              ' (Dərslər mövcud deyil)'}
+            {isSectionDisabled && ' (Mövcud deyil)'}
           </Text>
         </div>
         <div>

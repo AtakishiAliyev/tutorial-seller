@@ -51,7 +51,7 @@ const LessonDetail: FC = () => {
 
   if (!currentLesson) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+      <div className="flex flex-col items-center justify-center h-[50dvh] w-full px-6 text-center">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full">
           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Menu className="w-10 h-10 text-gray-400" />
