@@ -3,7 +3,7 @@ import { useWatchCourseStore } from '@business/services/course/useWatchCourseSto
 import { Lesson } from '@infra/dto/course/GetCourseDetailDto.ts';
 import Text from '@presentation/shared/ui/Typography.tsx';
 import { timeFormattor } from '@presentation/shared/utils/timeFormattor.ts';
-import { CirclePlay } from 'lucide-react';
+import { CirclePlay, Lock } from 'lucide-react';
 import { ChangeEvent, FC, memo, MouseEvent, useCallback } from 'react';
 
 type CourseLessonProps = {
@@ -23,6 +23,13 @@ const CourseLesson: FC<CourseLessonProps> = ({ lesson }) => {
 
   const handleLessonClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
+      // Блокируем клик для непубличных уроков
+      if (!lesson.isPublic) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       e.stopPropagation();
       e.preventDefault();
       setCurrentLesson(lesson as Lesson);
@@ -37,39 +44,55 @@ const CourseLesson: FC<CourseLessonProps> = ({ lesson }) => {
 
   const isLessonCompleted = lesson.userProgresses?.isCompleted === true;
   const isCurrentLesson = currentLesson?.id === lesson.id;
+  const isPublicLesson = lesson.isPublic;
 
   return (
     <div
       onClick={handleLessonClick}
       id={`lesson-${lesson.id}`}
-      className="flex items-start space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+      className={`flex items-start space-x-3 p-2 rounded transition-colors ${
+        isPublicLesson ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-60'
+      }`}
     >
       <div className="mt-1">
-        <input
-          type="checkbox"
-          disabled={loading}
-          checked={isLessonCompleted}
-          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
-          onClick={e => e.stopPropagation()}
-          onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-            e.stopPropagation();
-            e.preventDefault();
-            await saveLessonProgress({
-              isCompleted: !isLessonCompleted,
-            });
-          }}
-        />
+        {isPublicLesson ? (
+          <input
+            type="checkbox"
+            disabled={loading}
+            checked={isLessonCompleted}
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+            onClick={e => e.stopPropagation()}
+            onChange={async (e: ChangeEvent<HTMLInputElement>) => {
+              e.stopPropagation();
+              e.preventDefault();
+              await saveLessonProgress({
+                isCompleted: !isLessonCompleted,
+              });
+            }}
+          />
+        ) : (
+          <Lock className="w-4 h-4 text-gray-400" />
+        )}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${isCurrentLesson ? 'text-blue-700' : 'text-gray-500'}`}>
+        <p
+          className={`text-sm font-medium ${
+            isCurrentLesson && isPublicLesson
+              ? 'text-blue-700'
+              : isPublicLesson
+                ? 'text-gray-500'
+                : 'text-gray-400'
+          }`}
+        >
           {lesson.title}
+          {!isPublicLesson && ' (Mövcud deyil)'}
         </p>
         <div className="flex items-center mt-1 space-x-1">
           {/* Video Icon */}
           <CirclePlay className="text-gray-400 text-sm" />
-          <Text color="muted" size="caption">
+          <Text color={isPublicLesson ? 'muted' : 'secondary'} size="caption">
             {timeFormattor(lesson.duration)}min
           </Text>
         </div>

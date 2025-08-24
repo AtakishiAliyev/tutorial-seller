@@ -11,7 +11,6 @@ const LessonsNavigate = () => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
 
   if (loading || !data) {
-    // TODO: Yüklənmə skeleton əlavə et
     return (
       <div className="flex items-center justify-center h-full">
         <p>Yüklənir...</p>
@@ -25,10 +24,17 @@ const LessonsNavigate = () => {
     );
   }
 
-  const allLessons = data.sections.flatMap(section => section.lessons);
-  const currentLessonIndex = allLessons.findIndex(lesson => lesson.id === currentLesson?.id);
-  const nextLesson = allLessons[currentLessonIndex + 1];
-  const prevLesson = allLessons[currentLessonIndex - 1];
+  // Получаем все публичные уроки
+  const publicLessons = data.sections
+    .flatMap(section => section.lessons)
+    .filter(lesson => lesson.isPublic);
+
+  // Находим индекс текущего урока в массиве публичных уроков
+  const currentLessonIndex = publicLessons.findIndex(lesson => lesson.id === currentLesson?.id);
+
+  // Определяем следующий и предыдущий публичные уроки
+  const nextLesson = publicLessons[currentLessonIndex + 1];
+  const prevLesson = publicLessons[currentLessonIndex - 1];
 
   const isNextDisabled = !nextLesson;
   const isPrevDisabled = !prevLesson;
@@ -39,22 +45,14 @@ const LessonsNavigate = () => {
         <Button
           variant="outline"
           disabled={isPrevDisabled}
-          onClick={() => {
-            if (prevLesson) {
-              setCurrentLesson(prevLesson);
-            }
-          }}
+          onClick={() => setCurrentLesson(prevLesson)}
         >
           Əvvəlki
         </Button>
         <Button
           variant="primary"
           disabled={isNextDisabled}
-          onClick={() => {
-            if (nextLesson) {
-              setCurrentLesson(nextLesson);
-            }
-          }}
+          onClick={() => setCurrentLesson(nextLesson)}
         >
           Növbəti Dərs
         </Button>

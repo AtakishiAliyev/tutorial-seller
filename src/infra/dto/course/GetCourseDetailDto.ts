@@ -25,6 +25,7 @@ export interface Lesson {
   video: Video | null;
   resources: Resource[];
   userProgresses: UserProgress | null;
+  isPublic: boolean;
 }
 
 export interface Video {

@@ -23,6 +23,10 @@ export const useWatchCourseStore = create<WatchCourseStore>(set => ({
   stopVideoPlaying: () => set({ isVideoPlaying: false }),
   startVideoPlaying: () => set({ isVideoPlaying: true }),
   setCurrentLesson: (lesson: Lesson | null) => {
+    if (lesson?.isPublic === false) {
+      return;
+    }
+
     localStorage.setItem('lastLesson', lesson ? lesson.id : '');
     set({ currentLesson: lesson });
   },

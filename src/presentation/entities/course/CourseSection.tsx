@@ -3,6 +3,7 @@ import { Lesson, Section } from '@infra/dto/course/GetCourseDetailDto.ts';
 import Text from '@presentation/shared/ui/Typography.tsx';
 import { cn } from '@presentation/shared/utils/cn.ts';
 import { timeFormattor } from '@presentation/shared/utils/timeFormattor.ts';
+import { Lock } from 'lucide-react';
 import { ComponentType, FC, memo, useEffect, useMemo } from 'react';
 
 type CourseSectionProps = {
@@ -27,20 +28,37 @@ const CourseSection: FC<CourseSectionProps> = ({
   LessonComponent,
 }) => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
-  const sectionDuration = useMemo(() => {
-    return section.lessons.reduce((total, lesson) => total + (lesson.duration || 0), 0);
-  }, [section.lessons]);
-  const sectionDurationFormatted = useMemo(() => timeFormattor(sectionDuration), [sectionDuration]);
-  const completedLessonsCount = useMemo(() => {
-    return section.lessons.filter(lesson => lesson.userProgresses?.isCompleted).length;
-  }, [section.lessons]);
-  const totalLessonsCount = useMemo(() => {
-    return section.lessons.length;
+
+  // Получаем только публичные уроки
+  const publicLessons = useMemo(() => {
+    return section.lessons.filter(lesson => lesson.isPublic);
   }, [section.lessons]);
 
+  // Проверяем, есть ли в секции публичные уроки
+  const hasPublicLessons = useMemo(() => {
+    return publicLessons.length > 0;
+  }, [publicLessons]);
+
+  // Длительность считаем только для публичных уроков
+  const sectionDuration = useMemo(() => {
+    return publicLessons.reduce((total, lesson) => total + (lesson.duration || 0), 0);
+  }, [publicLessons]);
+
+  const sectionDurationFormatted = useMemo(() => timeFormattor(sectionDuration), [sectionDuration]);
+
+  // Считаем только завершенные публичные уроки
+  const completedLessonsCount = useMemo(() => {
+    return publicLessons.filter(lesson => lesson.userProgresses?.isCompleted).length;
+  }, [publicLessons]);
+
+  // Общее количество - только публичные уроки
+  const totalLessonsCount = useMemo(() => {
+    return publicLessons.length;
+  }, [publicLessons]);
+
   const isCurrentLessonInSection = useMemo(() => {
-    return currentLesson && section.lessons.some(lesson => lesson.id === currentLesson.id);
-  }, [currentLesson, section.lessons]);
+    return currentLesson && publicLessons.some(lesson => lesson.id === currentLesson.id);
+  }, [currentLesson, publicLessons]);
 
   useEffect(() => {
     if (isCurrentLessonInSection && !isOpen) {
@@ -52,28 +70,44 @@ const CourseSection: FC<CourseSectionProps> = ({
     return <div>Placeholder for empty section. TODO: Add empty section component</div>;
   }
 
+  // Если секция не публичная или не имеет публичных уроков, показываем как заблокированную
+  const isSectionDisabled = !section.isPublic || !hasPublicLessons;
+
   return (
-    <div className="border border-gray-200 rounded-lg bg-white">
+    <div
+      className={cn(
+        'border border-gray-200 rounded-lg bg-white',
+        isSectionDisabled && 'opacity-60',
+      )}
+    >
       {/* Module Header */}
       <div
         className={cn({
-          'flex items-center justify-between p-4 gap-4 hover:bg-gray-50 transition-colors': true,
-          'cursor-pointer': !isCurrentLessonInSection,
-          'cursor-not-allowed bg-gray-100': isCurrentLessonInSection,
+          'flex items-center justify-between p-4 gap-4 transition-colors': true,
+          'cursor-pointer hover:bg-gray-50': !isSectionDisabled && !isCurrentLessonInSection,
+          'cursor-not-allowed bg-gray-100': isCurrentLessonInSection || isSectionDisabled,
         })}
-        onClick={!isCurrentLessonInSection ? onClick : undefined}
-        aria-disabled={!isCurrentLessonInSection}
+        onClick={!isSectionDisabled && !isCurrentLessonInSection ? onClick : undefined}
+        aria-disabled={!!(isSectionDisabled || isCurrentLessonInSection)}
       >
         <div className="flex flex-col gap-1">
-          <Text weight="semibold" color="primary">
-            {section.title}
-          </Text>
-          <Text size="subtitle" color="muted">
+          <div className="flex items-center gap-2">
+            <Text weight="semibold" color={isSectionDisabled ? 'muted' : 'primary'}>
+              {section.title}
+            </Text>
+            {isSectionDisabled && <Lock className="w-4 h-4 text-gray-400" />}
+          </div>
+          <Text size="subtitle" color={isSectionDisabled ? 'secondary' : 'muted'}>
             {completedLessonsCount} / {totalLessonsCount} | {sectionDurationFormatted}min
+            {isSectionDisabled && !section.isPublic && ' (Mövcud deyil)'}
+            {isSectionDisabled &&
+              section.isPublic &&
+              !hasPublicLessons &&
+              ' (Dərslər mövcud deyil)'}
           </Text>
         </div>
         <div>
-          {!isCurrentLessonInSection ? (
+          {!isCurrentLessonInSection && !isSectionDisabled ? (
             ToggleButtonIcon ? (
               <ToggleButtonIcon
                 className={cn({
@@ -91,7 +125,7 @@ const CourseSection: FC<CourseSectionProps> = ({
       </div>
 
       {/* Module Content */}
-      {isOpen && (
+      {isOpen && !isSectionDisabled && (
         <div className="border-t border-gray-200">
           <div className="p-4 space-y-3">
             {section.lessons.map((lesson, index) => (
