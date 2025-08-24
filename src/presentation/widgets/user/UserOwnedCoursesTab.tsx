@@ -1,44 +1,33 @@
-import useGetOwnedCourses from '@business/services/course/useGetOwnedCourses.ts';
+import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
 import ProfileCourseCard from '@presentation/entities/course/ProfileCourseCard.tsx';
-import CourseAction from '@presentation/features/course/CourseAction.tsx';
-import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
-import List from '@presentation/shared/ui/List.tsx';
-import { memo } from 'react';
+import Text from '@presentation/shared/ui/Typography';
+import { FC } from 'react';
 
-const UserOwnedCoursesTab = () => {
-  const { loading, courses, error } = useGetOwnedCourses({
-    sort: 'DESC',
-    limit: 50,
-    page: 1,
-  });
-  if (loading || !courses) {
-    // TODO: Add skeleton loading
-    return <div>Loading...</div>;
-  }
-  if (error) {
+type UserOwnedCoursesTabProps = {
+  courses: GetOwnedCoursesResponseDto[];
+};
+
+const UserOwnedCoursesTab: FC<UserOwnedCoursesTabProps> = ({ courses }) => {
+  if (!courses || courses?.length === 0) {
     return (
-      <ErrorBox
-        messages={
-          error.message || 'An error occurred while fetching your courses. Please try again later.'
-        }
-      />
+      <div className="flex flex-col items-center justify-center py-20">
+        <Text size="h2" weight="semibold" color="muted">
+          Hal-hazırda heç bir kursunuz yoxdur.
+        </Text>
+        <Text size="p" color="muted" className="mt-2 text-center max-w-[400px]">
+          Yeni kurslar əldə etmək üçün əsas səyfəyə daxil olun və öyrənməyə başlayın.
+        </Text>
+      </div>
     );
   }
+
   return (
-    <div>
-      <List>
-        {courses.data.map(course => (
-          <ProfileCourseCard
-            key={course.id}
-            course={course}
-            footerSlot={<CourseAction courseSlug={course.slug} />}
-          />
-        ))}
-      </List>
+    <div className="flex flex-col gap-6">
+      {courses.map(course => (
+        <ProfileCourseCard key={course.id} course={course} />
+      ))}
     </div>
   );
 };
 
-const MemoizedUserOwnedCoursesTab = memo(UserOwnedCoursesTab);
-
-export default MemoizedUserOwnedCoursesTab;
+export default UserOwnedCoursesTab;

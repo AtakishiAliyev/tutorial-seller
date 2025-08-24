@@ -18,14 +18,14 @@ const CourseAction: FC<CourseActionProps> = props => {
 
   if (error && error.statusCode !== 401)
     return (
-      <ErrorBox messages="Oops! Something went wrong while checking ownership of course... Please, restart the page" />
+      <ErrorBox messages="Oops! Kursun mülkiyyətini yoxlayarkən problem yarandı... Zəhmət olmasa, səhifəni yenidən yükləyin" />
     );
 
-  // User is not signed in (401 Unauthorized)
+  // İstifadəçi daxil olmayıb (401 Unauthorized)
   if (error?.statusCode === 401) {
     return (
       <Button variant="primary" to={`/login?courseToBuy=${courseSlug}`} className="w-full">
-        Sign in to buy
+        Almaq üçün daxil olun
       </Button>
     );
   }
@@ -33,7 +33,7 @@ const CourseAction: FC<CourseActionProps> = props => {
   if (isOwned?.isOwned === false) {
     return (
       <Button variant="primary" className="w-full">
-        Buy now
+        İndi al
       </Button>
     );
   }
@@ -41,14 +41,14 @@ const CourseAction: FC<CourseActionProps> = props => {
   if (isOwned?.isOwned === true && isOwned?.isActive === false) {
     return (
       <Button variant="primary" disabled={true} className="w-full">
-        You don't have access to this course. Contact with admin
+        Bu kursa girişiniz yoxdur. Administrator ilə əlaqə saxlayın
       </Button>
     );
   }
 
   return (
     <Button variant="primary" to={`/courses/watch/${courseSlug}`} className="w-full">
-      Watch course
+      Kursu izləyin
     </Button>
   );
 };

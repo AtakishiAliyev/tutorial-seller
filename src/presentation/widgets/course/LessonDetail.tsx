@@ -21,7 +21,7 @@ const LessonDetail: FC = () => {
     set('course-sidebar', true);
   }, [set]);
 
-  // Используем useEffect для восстановления последнего урока
+  // Sonuncu dərsi bərpa etmək üçün useEffect istifadə olunur
   useEffect(() => {
     if (data && !currentLesson && lastLessonId) {
       const allLessons = data.sections.flatMap(section => section.lessons);
@@ -35,14 +35,14 @@ const LessonDetail: FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-gray-500">Yüklənir...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <ErrorBox messages="Oops! Something went wrong while getting course lessons... Please, try again later or contact with admin." />
+      <ErrorBox messages="Ups! Kurs dərslərini gətirərkən xəta baş verdi... Zəhmət olmasa, sonra yenidən cəhd edin və ya administrator ilə əlaqə saxlayın." />
     );
   }
 
@@ -50,7 +50,7 @@ const LessonDetail: FC = () => {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-gray-500">
-          {lastLessonId ? 'Last watched lesson not found' : 'Select a lesson to start watching'}
+          {lastLessonId ? 'Son izlənilmiş dərs tapılmadı' : 'İzləməyə başlamaq üçün dərs seçin'}
         </p>
       </div>
     );

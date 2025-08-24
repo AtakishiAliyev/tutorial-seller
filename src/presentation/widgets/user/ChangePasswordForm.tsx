@@ -36,16 +36,19 @@ const ChangePasswordForm: FC<ServicesGeneralProps> = ({
       >
         <Input.Row className="flex flex-col md:flex-row items-start justify-between gap-4">
           <Input.Group id="oldPassword" variant={errors.oldPassword ? 'error' : 'default'}>
-            <Input.Label>Current Password</Input.Label>
-            <PasswordInput placeholder="Enter your current password" {...register('oldPassword')} />
+            <Input.Label>Hazırkı Şifrə</Input.Label>
+            <PasswordInput
+              placeholder="Hazırkı şifrənizi daxil edin"
+              {...register('oldPassword')}
+            />
             {errors.oldPassword && (
               <Input.ErrorMessage>{errors.oldPassword.message as string}</Input.ErrorMessage>
             )}
           </Input.Group>
 
           <Input.Group id="newPassword" variant={errors.newPassword ? 'error' : 'default'}>
-            <Input.Label>New Password</Input.Label>
-            <PasswordInput placeholder="Enter your new password" {...register('newPassword')} />
+            <Input.Label>Yeni Şifrə</Input.Label>
+            <PasswordInput placeholder="Yeni şifrənizi daxil edin" {...register('newPassword')} />
             {errors.newPassword && (
               <Input.ErrorMessage>{errors.newPassword.message as string}</Input.ErrorMessage>
             )}
@@ -55,9 +58,9 @@ const ChangePasswordForm: FC<ServicesGeneralProps> = ({
           id="submitNewPassword"
           variant={errors.submitNewPassword ? 'error' : 'default'}
         >
-          <Input.Label>Confirm New Password</Input.Label>
+          <Input.Label>Yeni Şifrəni Təsdiqləyin</Input.Label>
           <PasswordInput
-            placeholder="Confirm your new password"
+            placeholder="Yeni şifrənizi təsdiqləyin"
             {...register('submitNewPassword')}
           />
           {errors.submitNewPassword && (
@@ -70,7 +73,7 @@ const ChangePasswordForm: FC<ServicesGeneralProps> = ({
           className="w-full max-w-[400px]"
           disabled={loading}
         >
-          {loading ? 'Changing password...' : 'Change Password'}
+          {loading ? 'Şifrə dəyişdirilir...' : 'Şifrəni Dəyiş'}
         </Button>
       </form>
     </>

@@ -15,10 +15,10 @@ const Profile = () => {
         <div className="flex flex-col items-center gap-10">
           <div className="flex flex-col items-center gap-2">
             <Text weight="semibold" size="h1">
-              Account Settings
+              Hesab Parametrləri
             </Text>
             <Text size="subtitle" color="muted">
-              Manage your profile, password, and view order history.
+              Profilinizi idarə edin, şifrənizi dəyişin və sifariş tarixçənizi görün.
             </Text>
           </div>
           <ProfileTabs>

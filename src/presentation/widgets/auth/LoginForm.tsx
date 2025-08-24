@@ -34,15 +34,15 @@ const LoginForm: FC<LoginFormProps> = ({
   } = form;
 
   return (
-    <FormCard title="Welcome Back" subtitle="Sign in to continue your learning journey">
+    <FormCard title="Xoş gəldiniz" subtitle="Öyrənməyə davam etmək üçün daxil olun">
       <ErrorBox messages={error} />
       <form onSubmit={signIn} className="space-y-6">
         {/* Группа для поля Email */}
         <Input.Group id="email" variant={errors.email ? 'error' : 'default'}>
-          <Input.Label>Email Address</Input.Label>
+          <Input.Label>E-poçt ünvanı</Input.Label>
           <Input
             type="email"
-            placeholder="Enter your email"
+            placeholder="E-poçtunuzu daxil edin"
             leftIcon={<Mail size={16} className="text-gray-400" />}
             {...register('email')}
           />
@@ -53,8 +53,8 @@ const LoginForm: FC<LoginFormProps> = ({
 
         {/* Группа для поля Password */}
         <Input.Group id="password" variant={errors.password ? 'error' : 'default'}>
-          <Input.Label>Password</Input.Label>
-          <PasswordInput placeholder="Enter your password" {...register('password')} />
+          <Input.Label>Şifrə</Input.Label>
+          <PasswordInput placeholder="Şifrənizi daxil edin" {...register('password')} />
           {errors.password && (
             <Input.ErrorMessage>{errors.password.message as string}</Input.ErrorMessage>
           )}
@@ -62,20 +62,20 @@ const LoginForm: FC<LoginFormProps> = ({
 
         <div className="flex justify-end">
           <Link href="/forgot-password" variant="primary" className="text-sm">
-            Forgot your password?
+            Şifrənizi unutmusunuz?
           </Link>
         </div>
 
         <Button htmlType="submit" variant="primary" className="w-full" disabled={loading}>
-          {loading ? 'Signing In...' : 'Sign In'}
+          {loading ? 'Daxil olunur...' : 'Daxil ol'}
         </Button>
       </form>
 
       <div className="text-center">
-        <DividerWithText paddingY="py-4" text="Don't have an account yet?" />
+        <DividerWithText paddingY="py-4" text="Hesabınız yoxdur?" />
         <div className="flex justify-center">
           <Text color="error" size="p" weight="medium">
-            <Link to="/register">Create an account</Link>
+            <Link to="/register">Hesab yaradın</Link>
           </Text>
         </div>
       </div>

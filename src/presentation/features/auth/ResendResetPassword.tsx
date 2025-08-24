@@ -58,10 +58,10 @@ const ResendResetPassword = ({
         disabled={loading || cooldown > 0}
       >
         {loading
-          ? 'Sending...'
+          ? 'Göndərilir...'
           : cooldown > 0
-            ? `Resend code in ${cooldown}s`
-            : 'Resend reset code'}
+            ? `Kod ${cooldown}s sonra yenidən göndərilə bilər`
+            : 'Sıfırlama kodunu yenidən göndər'}
       </Button>
     </div>
   );

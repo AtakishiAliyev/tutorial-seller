@@ -33,7 +33,7 @@ const ProfileTabs: FC<ProfileTabsProps> = ({
             });
           }}
         >
-          Profile
+          Profil
         </Tab>
         <Tab
           className={({ selected }) => {
@@ -45,7 +45,7 @@ const ProfileTabs: FC<ProfileTabsProps> = ({
             });
           }}
         >
-          My Courses
+          Kurslarım
         </Tab>
       </TabList>
       <TabPanels>{children}</TabPanels>

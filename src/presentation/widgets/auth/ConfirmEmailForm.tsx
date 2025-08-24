@@ -44,11 +44,11 @@ const ConfirmEmailForm: FC<ConfirmEmailFormProps> = ({
 
   return (
     <FormCard
-      title="Confirm Your Email"
+      title="E-poçtunuzu təsdiqləyin"
       subtitle={
         userEmail
-          ? `We've sent a confirmation code to ${userEmail}`
-          : 'Please enter the confirmation code sent to your email'
+          ? `Təsdiq kodu ${userEmail} ünvanına göndərildi`
+          : 'Zəhmət olmasa, e-poçtunuza göndərilən təsdiq kodunu daxil edin'
       }
     >
       <ErrorBox messages={confirmError} />
@@ -56,9 +56,9 @@ const ConfirmEmailForm: FC<ConfirmEmailFormProps> = ({
       <form onSubmit={confirmEmail} className="space-y-6">
         <div className="flex flex-col items-center">
           <Input.Group id="token" variant={errors.token ? 'error' : 'default'}>
-            <Input.Label className="text-center">Verification Code</Input.Label>
+            <Input.Label className="text-center">Təsdiq Kodu</Input.Label>
             <Text color="muted" className="mb-4 text-center w-full">
-              <p>Enter the 6-digit code from your email</p>
+              <p>E-poçtunuza gələn 6 rəqəmli kodu daxil edin</p>
             </Text>
 
             <Controller
@@ -83,7 +83,7 @@ const ConfirmEmailForm: FC<ConfirmEmailFormProps> = ({
 
           <div className="mt-4 w-full">
             <Button htmlType="submit" variant="primary" className="w-full" disabled={loading}>
-              {loading ? 'Verifying...' : 'Verify Email'}
+              {loading ? 'Yoxlanılır...' : 'E-poçtu təsdiqlə'}
             </Button>
           </div>
         </div>
@@ -91,16 +91,16 @@ const ConfirmEmailForm: FC<ConfirmEmailFormProps> = ({
 
       <div className="mt-6 text-center flex flex-col gap-4">
         <Text color="secondary" size="p">
-          Didn't receive the сode?
+          Kod gəlməyib?
         </Text>
         {resendConfirmationEmailSlot}
       </div>
 
       <div className="mt-4 text-center">
-        <DividerWithText paddingY="py-4" text="Return to Sign Up" />
+        <DividerWithText paddingY="py-4" text="Qeydiyyata qayıt" />
         <div className="flex justify-center">
           <Text color="error" size="p" weight="medium">
-            <Link to="/register">Sign Up</Link>
+            <Link to="/register">Qeydiyyatdan keç</Link>
           </Text>
         </div>
       </div>

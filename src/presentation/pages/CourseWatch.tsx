@@ -12,7 +12,9 @@ const CourseWatch = () => {
   const setCourseSlug = useWatchCourseStore(state => state.setCourseSlug);
 
   if (!courseSlug) {
-    return <ErrorBox messages="Oops! Course slug is not provided. Please, try again later." />;
+    return (
+      <ErrorBox messages="Oops! Kurs slug-ı göstərilməyib. Zəhmət olmasa, bir az sonra yenidən cəhd edin." />
+    );
   }
 
   setCourseSlug(courseSlug);

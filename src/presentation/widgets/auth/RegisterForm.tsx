@@ -32,31 +32,32 @@ const RegisterForm: FC<RegisterFormProps> = ({
   } = form;
 
   return (
-    <FormCard title="Create Account" subtitle="Join us and start your learning journey">
+    <FormCard title="Hesab Yarat" subtitle="Bizə qoşul və öyrənmə səyahətinə başla">
       <ErrorBox messages={error} />
       <form onSubmit={signUp} className="space-y-4">
         <Input.Row>
-          {/* Поле для имени */}
+          {/* Ad sahəsi */}
           <Input.Group id="name" variant={errors.name ? 'error' : 'default'}>
-            <Input.Label>Name</Input.Label>
-            <Input placeholder="Enter your name" {...register('name')} />
+            <Input.Label>Ad</Input.Label>
+            <Input placeholder="Adınızı daxil edin" {...register('name')} />
             {errors.name && (
               <Input.ErrorMessage>{errors.name.message as string}</Input.ErrorMessage>
             )}
           </Input.Group>
 
-          {/* Поле для фамилии */}
+          {/* Soyad sahəsi */}
           <Input.Group id="surname" variant={errors.surname ? 'error' : 'default'}>
-            <Input.Label>Surname</Input.Label>
-            <Input placeholder="Enter your surname" {...register('surname')} />
+            <Input.Label>Soyad</Input.Label>
+            <Input placeholder="Soyadınızı daxil edin" {...register('surname')} />
             {errors.surname && (
               <Input.ErrorMessage>{errors.surname.message as string}</Input.ErrorMessage>
             )}
           </Input.Group>
         </Input.Row>
-        {/* Phone Field */}
+
+        {/* Telefon sahəsi */}
         <Input.Group id="phone" variant={errors.phone ? 'error' : 'default'}>
-          <Input.Label>Phone Number</Input.Label>
+          <Input.Label>Telefon Nömrəsi</Input.Label>
           <Input
             type="tel"
             placeholder="+994XXXXXXXXX"
@@ -68,34 +69,34 @@ const RegisterForm: FC<RegisterFormProps> = ({
           )}
         </Input.Group>
 
-        {/* Email Field */}
+        {/* Email sahəsi */}
         <Input.Group id="email" variant={errors.email ? 'error' : 'default'}>
-          <Input.Label>Email Address</Input.Label>
-          <Input type="email" placeholder="Enter your email" {...register('email')} />
+          <Input.Label>Email Ünvanı</Input.Label>
+          <Input type="email" placeholder="Email ünvanınızı daxil edin" {...register('email')} />
           {errors.email && (
             <Input.ErrorMessage>{errors.email.message as string}</Input.ErrorMessage>
           )}
         </Input.Group>
 
-        {/* Password Field */}
+        {/* Şifrə sahəsi */}
         <Input.Group id="password" variant={errors.password ? 'error' : 'default'}>
-          <Input.Label>Password</Input.Label>
-          <PasswordInput placeholder="Enter your password" {...register('password')} />
+          <Input.Label>Şifrə</Input.Label>
+          <PasswordInput placeholder="Şifrənizi daxil edin" {...register('password')} />
           {errors.password && (
             <Input.ErrorMessage>{errors.password.message as string}</Input.ErrorMessage>
           )}
         </Input.Group>
 
         <Button htmlType="submit" variant="primary" className="w-full mt-2" disabled={loading}>
-          {loading ? 'Creating Account...' : 'Create Account'}
+          {loading ? 'Hesab yaradılır...' : 'Hesab Yarat'}
         </Button>
       </form>
 
       <div className="text-center mt-4">
-        <DividerWithText paddingY="py-4" text="Already have an account?" />
+        <DividerWithText paddingY="py-4" text="Artıq hesabınız var?" />
         <div className="flex justify-center">
           <Text color="error" size="p" weight="medium">
-            <Link to="/login">Sign in</Link>
+            <Link to="/login">Daxil ol</Link>
           </Text>
         </div>
       </div>

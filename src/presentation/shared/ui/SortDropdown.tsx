@@ -5,17 +5,17 @@ import { useSearchParams } from 'react-router-dom';
 type SortValue = 'ASC' | 'DESC';
 
 const SORT_OPTIONS: { value: SortValue; label: string }[] = [
-  { value: 'DESC', label: 'По убыванию' },
-  { value: 'ASC', label: 'По возрастанию' },
+  { value: 'DESC', label: 'Azalan sırayla' },
+  { value: 'ASC', label: 'Artan sırayla' },
 ];
 
 interface SortDropdownProps {
-  // Опциональные пропсы для работы как "контролируемый" компонент
+  // "Kontrollü" komponent kimi işləmək üçün opsional props
   currentValue?: SortValue;
   onChange?: (value: SortValue) => void;
-  // Опциональный ключ для работы с URL
+  // URL ilə işləmək üçün opsional açar
   queryKey?: string;
-  // Общие пропсы
+  // Ümumi props
   label?: string;
   className?: string;
 }
@@ -29,8 +29,8 @@ const SortDropdown = ({
 }: SortDropdownProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 1. Определяем текущее значение с учетом приоритетов:
-  // controlledValue > значение из URL > значение по умолчанию.
+  // 1. Cari dəyəri prioritetlərə görə təyin edirik:
+  // controlledValue > URL-dən dəyər > default dəyər
   const value = useMemo((): SortValue => {
     if (controlledValue) {
       return controlledValue;
@@ -41,11 +41,11 @@ const SortDropdown = ({
         return paramValue;
       }
     }
-    return 'DESC'; // Значение по умолчанию
+    return 'DESC'; // Default dəyər
   }, [controlledValue, queryKey, searchParams]);
 
-  // 2. Определяем обработчик изменений:
-  // Приоритет у controlledOnChange, иначе работаем с URL.
+  // 2. Dəyişiklik handlerini təyin edirik:
+  // Prioritet controlledOnChange-dədir, əks halda URL ilə işləyirik
   const handleChange = (newValue: SortValue) => {
     if (controlledOnChange) {
       controlledOnChange(newValue);
@@ -59,10 +59,10 @@ const SortDropdown = ({
         { replace: true },
       );
     }
-    // Если не передан ни `onChange`, ни `queryKey`, компонент будет read-only.
+    // Əgər nə `onChange`, nə də `queryKey` verilməyibsə, komponent read-only olacaq
   };
 
-  // 3. Находим метку для отображения в кнопке.
+  // 3. Düymədə göstəriləcək etiketi tapırıq
   const selectedOptionLabel = SORT_OPTIONS.find(opt => opt.value === value)?.label;
 
   return (

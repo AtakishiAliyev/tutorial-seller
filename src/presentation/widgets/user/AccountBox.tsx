@@ -35,11 +35,11 @@ const AccountBox = () => {
   };
 
   if (loading) {
-    return <div className="flex items-center">Loading...</div>;
+    return <div className="flex items-center">Yüklənir...</div>;
   }
   if (error && error.statusCode !== 401) {
     return (
-      <ErrorBox messages="Oops! Something went wrong while getting your profile data. Please, try again later." />
+      <ErrorBox messages="Oops! Profil məlumatlarınızı götürərkən problem yarandı. Zəhmət olmasa, bir az sonra yenidən cəhd edin." />
     );
   }
 
@@ -53,18 +53,18 @@ const AccountBox = () => {
               {me.name} {me.surname}
             </Text>
             <Text className="block md:hidden" size="p" weight="medium" color="secondary">
-              Goto Profile
+              Profilə keç
             </Text>
           </Link>
         </>
       ) : (
         <div className="flex items-center space-x-2">
           <Link variant="primary" to="/login">
-            Sign In
+            Daxil ol
           </Link>
           <span>|</span>
           <Link variant="muted" to="/register">
-            Sign Up
+            Qeydiyyatdan keç
           </Link>
         </div>
       )}

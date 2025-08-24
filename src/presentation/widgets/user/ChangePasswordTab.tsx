@@ -6,9 +6,9 @@ const ChangePasswordTab = () => {
   return (
     <div className="flex flex-col gap-5 px-4">
       <div className="flex flex-col">
-        <Text size="h2">Change Password</Text>
+        <Text size="h2">Şifrəni Dəyiş</Text>
         <Text size="subtitle" color="muted">
-          Choose a strong password and don't reuse it for other accounts.
+          Güclü bir şifrə seçin və onu digər hesablar üçün təkrar istifadə etməyin.
         </Text>
       </div>
       <ChangePasswordForm />

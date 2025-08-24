@@ -56,7 +56,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
 
   // Доступные качества видео (fallback)
   const qualities = [
-    { label: 'Auto', value: 'auto' },
+    { label: 'Avtomatik', value: 'auto' },
     { label: '4K', value: '2160p' },
     { label: '1440p', value: '1440p' },
     { label: '1080p', value: '1080p' },
@@ -216,7 +216,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
             label: `${level.height}p`,
             value: index,
           }));
-          qualities.unshift({ label: 'Auto', value: -1 });
+          qualities.unshift({ label: 'Avtomatik', value: -1 });
           setAvailableQualities(qualities);
         }
       });
@@ -446,13 +446,13 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h3 className="text-white text-xl mb-2">Ошибка загрузки видео</h3>
-            <p className="text-gray-300 text-sm mb-4">Проверьте URL или попробуйте позже</p>
+            <h3 className="text-white text-xl mb-2">Video yüklənmə xətası</h3>
+            <p className="text-gray-300 text-sm mb-4">URL-i yoxlayın və ya sonra cəhd edin</p>
             <button
               onClick={retryVideo}
               className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
             >
-              Попробовать снова
+              Yenidən cəhd et
             </button>
           </div>
         </div>
@@ -564,7 +564,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                   onClick={e => e.stopPropagation()} // Предотвращаем всплытие события
                 >
                   <div className="mb-4">
-                    <h3 className="text-white text-sm font-semibold mb-2">Скорость</h3>
+                    <h3 className="text-white text-sm font-semibold mb-2">Sürət</h3>
                     <div className="space-y-1">
                       {playbackRates.map(rate => (
                         <button
@@ -583,7 +583,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                   </div>
 
                   <div>
-                    <h3 className="text-white text-sm font-semibold mb-2">Качество</h3>
+                    <h3 className="text-white text-sm font-semibold mb-2">Keyfiyyət</h3>
                     <div className="space-y-1">
                       {availableQualities.length > 0
                         ? availableQualities.map(q => (

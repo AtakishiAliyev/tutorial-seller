@@ -58,10 +58,10 @@ const ResendConfirmationEmail = ({
         disabled={loading || cooldown > 0}
       >
         {loading
-          ? 'Sending...'
+          ? 'Göndərilir...'
           : cooldown > 0
-            ? `Resend code in ${cooldown}s`
-            : 'Resend confirmation code'}
+            ? `Kod ${cooldown}s sonra yenidən göndərilə bilər`
+            : 'Təsdiq kodunu yenidən göndər'}
       </Button>
     </div>
   );

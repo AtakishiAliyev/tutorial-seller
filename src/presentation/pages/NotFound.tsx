@@ -11,18 +11,18 @@ const NotFound = () => {
           </Typography>
 
           <Typography color="secondary" className="text-3xl">
-            Страница не найдена
+            Səhifə tapılmadı
           </Typography>
 
           <Typography color="muted" className="mt-4">
-            К сожалению, мы не смогли найти страницу, которую вы ищете. Возможно, вы ошиблись в
-            адресе или страница была перемещена.
+            Təəssüf ki, axtardığınız səhifəni tapa bilmədik. Ola bilsin ki, ünvanı səhv yazmısınız
+            və ya səhifə köçürülüb.
           </Typography>
         </div>
 
         {/*  Link to go home  */}
         <Link to="/" className="block mt-4 text-xl text-center" variant="primary">
-          Вернуться на главную
+          Əsas səhifəyə qayıt
         </Link>
       </div>
     </div>

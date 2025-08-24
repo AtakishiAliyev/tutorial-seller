@@ -8,16 +8,16 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="container py-8">
-        {/* Course Grid */}
+        {/* Kurslar Şəbəkəsi */}
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">All Courses</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Bütün Kurslar</h2>
             <div className="flex justify-between gap-2 w-full">
               <CourseFilter
                 className="w-full flex md:flex-row flex-col"
                 searchSlot={
                   <SearchInput
-                    placeholder="Search course..."
+                    placeholder="Kurs axtar..."
                     className="w-full max-w-[400px]"
                     debounceTimeout={1000}
                     queryKey="search"

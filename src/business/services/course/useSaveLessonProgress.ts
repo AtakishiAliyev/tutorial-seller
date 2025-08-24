@@ -25,7 +25,7 @@ const useSaveLessonProgress = ({
   >({
     mutationFn: dto => courseRepository.saveLessonProgress(lessonId, dto),
     onSuccess: async () => {
-      if (showSuccessNotification) showToasts('Siz hesabınıza uğurla daxil oldunuz', 'success');
+      if (showSuccessNotification) showToasts('İrəliləyişiniz uğurla yadda saxlanıldı.', 'success');
       if (afterSuccess) afterSuccess();
       await queryClient.refetchQueries({
         queryKey: ['course', 'watch'],

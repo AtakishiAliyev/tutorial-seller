@@ -11,17 +11,17 @@ const LessonsNavigate = () => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
 
   if (loading || !data) {
-    // TODO: Add loading skeleton
+    // TODO: Yüklənmə skeleton əlavə et
     return (
       <div className="flex items-center justify-center h-full">
-        <p>Loading...</p>
+        <p>Yüklənir...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <ErrorBox messages="Oops! Something went wrong while getting course lessons... Please, try again later or contact with admin." />
+      <ErrorBox messages="Ups! Kurs dərslərini gətirərkən xəta baş verdi... Zəhmət olmasa, sonra yenidən cəhd edin və ya administrator ilə əlaqə saxlayın." />
     );
   }
 
@@ -45,7 +45,7 @@ const LessonsNavigate = () => {
             }
           }}
         >
-          Previous
+          Əvvəlki
         </Button>
         <Button
           variant="primary"
@@ -56,7 +56,7 @@ const LessonsNavigate = () => {
             }
           }}
         >
-          Next Lesson
+          Növbəti Dərs
         </Button>
       </div>
     </div>
