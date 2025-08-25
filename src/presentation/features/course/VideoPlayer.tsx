@@ -57,11 +57,10 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   // Доступные качества видео (fallback)
   const qualities = [
     { label: 'Avtomatik', value: 'auto' },
-    { label: '4K', value: '2160p' },
-    { label: '1440p', value: '1440p' },
     { label: '1080p', value: '1080p' },
     { label: '720p', value: '720p' },
     { label: '480p', value: '480p' },
+    {label: '360p', value: '360p' },
   ];
 
   // Скорости воспроизведения
