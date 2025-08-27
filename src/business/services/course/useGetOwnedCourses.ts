@@ -1,7 +1,6 @@
 import { HttpError } from '@infra/api/HttpError.ts';
 import { GetCoursesQueryDto } from '@infra/dto/course/GetCoursesQueryDto.ts';
 import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
-import { GetPublicCourseDto } from '@infra/dto/course/GetPublicCourseDto.ts';
 import courseRepository from '@infra/repositories/course';
 import { PaginatedResult } from '@infra/shared/dto/PaginatedResult.ts';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 export type UseGetOwnedCoursesProps = GetCoursesQueryDto & {};
 
 type UseGetOwnedCoursesReturn = {
-  courses: PaginatedResult<GetPublicCourseDto> | undefined;
+  courses: PaginatedResult<GetOwnedCoursesResponseDto> | undefined;
   error: HttpError | null;
   loading: boolean;
 };

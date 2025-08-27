@@ -22,14 +22,16 @@ const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
         <div className="mt-2 flex items-center text-sm text-gray-500">
           <Calendar className="mr-2" />
           <span>
-            Purchased on:{' '}
-            {new Date(course.userPurchases[0].purchaseDate).toLocaleDateString('az-AZ')}
-          </span>{' '}
-          {/* Replace with actual purchase date in future */}
+            Alınma tarixi:{' '}
+            {new Date(course.userPurchases[0].purchaseDate).toLocaleDateString('az-AZ', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>
         </div>
         <div className="mt-4 flex items-center justify-between mb-4">
-          <p className="text-xl font-bold text-gray-900">${course.salePrice}</p>
-          {/*  Replace in future with the real price from pay object  */}
+          <p className="text-xl font-bold text-gray-900">{course.salePrice.toFixed(2)} AZN</p>
         </div>
         {footerSlot}
       </div>

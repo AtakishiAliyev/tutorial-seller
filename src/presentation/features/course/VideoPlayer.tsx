@@ -60,7 +60,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     { label: '1080p', value: '1080p' },
     { label: '720p', value: '720p' },
     { label: '480p', value: '480p' },
-    {label: '360p', value: '360p' },
+    { label: '360p', value: '360p' },
   ];
 
   // Скорости воспроизведения
