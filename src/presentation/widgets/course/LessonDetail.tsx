@@ -88,7 +88,7 @@ const LessonDetail: FC = () => {
 
       {/* Условное отображение VideoPlayer или сообщения об отсутствии видео */}
       {hasVideo ? (
-        <div className="mt-6 w-full lg:w-[750px]">
+        <div className="mt-6 mx-0 lg:mx-auto w-full lg:w-[750px]">
           <VideoPlayer
               lessonId={currentLesson.id}
               lastWatchedTime={currentLesson?.userProgresses?.progressSeconds}
