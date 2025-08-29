@@ -58,7 +58,7 @@ const CourseSection: FC<CourseSectionProps> = ({
   }, [isCurrentLessonInSection, isOpen, onClick]);
 
   if (section.lessons?.length === 0) {
-    return <div>Placeholder for empty section. TODO: Add empty section component</div>;
+    return null;
   }
 
   const isSectionDisabled = section.isPublic;
