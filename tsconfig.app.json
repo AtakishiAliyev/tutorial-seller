@@ -23,6 +23,7 @@
       "@infra/*": ["infra/*"],
       "@business/*": ["business/*"],
       "@presentation/*": ["presentation/*"],
+      "/*": ["./*", "./public/*"]
     },
 
     /* Linting */

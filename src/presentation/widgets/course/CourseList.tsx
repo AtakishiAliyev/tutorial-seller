@@ -40,7 +40,7 @@ const CourseList: FC<CourseListProps> = ({ className }) => {
         courses.data.map(course => (
           <CourseCard
             key={course.slug}
-            footerSlot={<CourseAction courseSlug={course.slug} />}
+            footerSlot={<CourseAction courseName={course.title} courseSlug={course.slug} />}
             course={course}
           />
         ))}

@@ -90,9 +90,9 @@ const LessonDetail: FC = () => {
       {hasVideo ? (
         <div className="mt-6 mx-0 lg:mx-auto w-full lg:w-[750px]">
           <VideoPlayer
-              lessonId={currentLesson.id}
-              lastWatchedTime={currentLesson?.userProgresses?.progressSeconds}
-              url={currentLesson.video?.url || ''}
+            lessonId={currentLesson.id}
+            lastWatchedTime={currentLesson?.userProgresses?.progressSeconds}
+            url={currentLesson.video?.url || ''}
           />
         </div>
       ) : (

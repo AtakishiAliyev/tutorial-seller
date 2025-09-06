@@ -1,18 +1,21 @@
 import 'react-loading-skeleton/dist/skeleton.css';
 
 import useIsCourseOwned from '@business/services/course/useIsCourseOwned.ts';
-import Button from '@presentation/shared/ui/Button'; // Import your Button component
+import Button from '@presentation/shared/ui/Button';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import { FC, memo } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 type CourseActionProps = {
   courseSlug: string;
+  courseName: string;
 };
 
 const CourseAction: FC<CourseActionProps> = props => {
-  const { courseSlug } = props;
+  const { courseSlug, courseName } = props;
   const { loading, error, isOwned } = useIsCourseOwned(props);
+  // Need to format couse name to url search params friendly
+  const courseNameFormatted = encodeURIComponent(courseName);
 
   if (loading) return <Skeleton height={44} width="100%" borderRadius={8} />;
 
@@ -31,11 +34,24 @@ const CourseAction: FC<CourseActionProps> = props => {
   }
 
   if (isOwned?.isOwned === false) {
+    const whatsappMessage = `Salam! Kursla maraqlanıram "%22${courseNameFormatted}%22", ətraflı məlumat verə bilərsinizmi?`;
+    const whatsappUrl = `https://wa.me/994105150588?text=${whatsappMessage}`;
+
     return (
-      <Button variant="primary" className="w-full">
-        İndi al
+      <Button to={whatsappUrl} variant="primary" className="w-full flex items-center gap-2">
+        <img
+          className="w-7 h-7"
+          src="https://www.svgrepo.com/show/452133/whatsapp.svg"
+          alt="Whatsapp"
+        />
+        Bu kursa girişiniz yoxdur. Administrator ilə əlaqə saxlayın
       </Button>
     );
+    // return (
+    //   <Button variant="primary" className="w-full">
+    //     İndi al
+    //   </Button>
+    // );
   }
 
   if (isOwned?.isOwned === true && isOwned?.isActive === false) {
