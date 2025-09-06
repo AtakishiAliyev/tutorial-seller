@@ -44,7 +44,7 @@ const CourseAction: FC<CourseActionProps> = props => {
           src="https://www.svgrepo.com/show/452133/whatsapp.svg"
           alt="Whatsapp"
         />
-        Bu kursa girişiniz yoxdur. Administrator ilə əlaqə saxlayın
+        Kursu indi al
       </Button>
     );
     // return (
