@@ -35,7 +35,7 @@ const CourseAction: FC<CourseActionProps> = props => {
 
   if (isOwned?.isOwned === false) {
     const whatsappMessage = `Salam! Kursla maraqlanıram "%22${courseNameFormatted}%22", ətraflı məlumat verə bilərsinizmi?`;
-    const whatsappUrl = `https://wa.me/+994505554944?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/+994105150588?text=${whatsappMessage}`;
 
     return (
       <Button
