@@ -35,10 +35,15 @@ const CourseAction: FC<CourseActionProps> = props => {
 
   if (isOwned?.isOwned === false) {
     const whatsappMessage = `Salam! Kursla maraqlanıram "%22${courseNameFormatted}%22", ətraflı məlumat verə bilərsinizmi?`;
-    const whatsappUrl = `https://wa.me/994105150588?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/+994105150588?text=${whatsappMessage}`;
 
     return (
-      <Button to={whatsappUrl} variant="primary" className="w-full flex items-center gap-2">
+      <Button
+        target="_blank"
+        to={whatsappUrl}
+        variant="primary"
+        className="w-full flex items-center gap-2"
+      >
         <img
           className="w-7 h-7"
           src="https://www.svgrepo.com/show/452133/whatsapp.svg"
