@@ -1,4 +1,5 @@
 import { http } from '@infra/api';
+import { BuyCourseResponseDto } from '@infra/dto/course/BuyCourseResponseDto.ts';
 import { GetCourseDetailDto } from '@infra/dto/course/GetCourseDetailDto.ts';
 import { GetCoursesQueryDto } from '@infra/dto/course/GetCoursesQueryDto.ts';
 import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
@@ -46,12 +47,28 @@ const getAllMyCourses = async (dto: GetCoursesQueryDto) => {
   });
 };
 
+const buyCourse = async (courseSlug: string): Promise<BuyCourseResponseDto> => {
+  return http<BuyCourseResponseDto>({
+    url: `/courses/${courseSlug}/buy`,
+    method: 'POST',
+  });
+};
+
+const completePurchase = async (accessId: string, paymentId: string): Promise<void> => {
+  return http({
+    url: `/courses/${accessId}/complete-purchase/${paymentId}`,
+    method: 'POST',
+  });
+};
+
 const courseRepository = {
   getAllCourses,
   isCourseOwned,
   getCourseDetails,
   saveLessonProgress,
   getAllMyCourses,
+  buyCourse,
+  completePurchase,
 };
 
 export default courseRepository;

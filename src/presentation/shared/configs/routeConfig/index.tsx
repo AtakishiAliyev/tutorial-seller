@@ -14,6 +14,7 @@ const ForgotPasswordPage = lazy(() => import('@presentation/pages/auth/ForgotPas
 const ResetPasswordPage = lazy(() => import('@presentation/pages/auth/ResetPassword.tsx'));
 const CourseWatchPage = lazy(() => import('@presentation/pages/CourseWatch.tsx'));
 const ProfilePage = lazy(() => import('@presentation/pages/Profile.tsx'));
+const SubmitPaymentPage = lazy(() => import('@presentation/pages/SubmitPayment.tsx'));
 const NotFoundPage = lazy(() => import('@presentation/pages/NotFound.tsx'));
 
 export const routeConfig: RouteObject[] = [
@@ -104,6 +105,12 @@ export const routeConfig: RouteObject[] = [
         </Suspense>
       </UnAuthorizedOnlyRoute>
     ),
+  },
+  {
+    path: '/payment/callback',
+    element: (
+        <SubmitPaymentPage />
+    )
   },
   {
     path: '*',

@@ -1,9 +1,10 @@
 import 'react-loading-skeleton/dist/skeleton.css';
 
 import useIsCourseOwned from '@business/services/course/useIsCourseOwned.ts';
+import { useBuyCourseContract } from '@presentation/contracts/course/BuyCourseContract.tsx';
 import Button from '@presentation/shared/ui/Button';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
-import { FC, memo } from 'react';
+import { FC, memo, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 type CourseActionProps = {
@@ -12,10 +13,13 @@ type CourseActionProps = {
 };
 
 const CourseAction: FC<CourseActionProps> = props => {
-  const { courseSlug, courseName } = props;
+  const { courseSlug } = props;
   const { loading, error, isOwned } = useIsCourseOwned(props);
-  // Need to format couse name to url search params friendly
-  const courseNameFormatted = encodeURIComponent(courseName);
+  const { buyCourse, loading: buyCourseLoading } = useBuyCourseContract();
+
+  const handleBuyCourse = useCallback(async () => {
+    await buyCourse(courseSlug);
+  }, [buyCourse, courseSlug]);
 
   if (loading) return <Skeleton height={44} width="100%" borderRadius={8} />;
 
@@ -34,29 +38,16 @@ const CourseAction: FC<CourseActionProps> = props => {
   }
 
   if (isOwned?.isOwned === false) {
-    const whatsappMessage = `Salam! Kursla maraqlanıram "%22${courseNameFormatted}%22", ətraflı məlumat verə bilərsinizmi?`;
-    const whatsappUrl = `https://wa.me/+994105150588?text=${whatsappMessage}`;
-
     return (
       <Button
-        target="_blank"
-        to={whatsappUrl}
+        disabled={buyCourseLoading}
+        onClick={handleBuyCourse}
         variant="primary"
         className="w-full flex items-center gap-2"
       >
-        <img
-          className="w-7 h-7"
-          src="https://www.svgrepo.com/show/452133/whatsapp.svg"
-          alt="Whatsapp"
-        />
         Kursu indi al
       </Button>
     );
-    // return (
-    //   <Button variant="primary" className="w-full">
-    //     İndi al
-    //   </Button>
-    // );
   }
 
   if (isOwned?.isOwned === true && isOwned?.isActive === false) {

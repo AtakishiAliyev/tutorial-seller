@@ -125,9 +125,8 @@ const CourseSectionsSidebar: FC = () => {
     reset({
       'course-sidebar': false,
     });
-  }, []);
+  }, [reset]);
 
-  // Закрываем мобильный сайдбар при переходе на десктоп
   useEffect(() => {
     if (!isMobile && state['course-sidebar']) {
       set('course-sidebar', false);

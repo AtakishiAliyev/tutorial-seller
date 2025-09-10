@@ -4,6 +4,7 @@ import CourseAction from '@presentation/features/course/CourseAction.tsx';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import List from '@presentation/shared/ui/List.tsx';
 import { cn } from '@presentation/shared/utils/cn.ts';
+import BuyCourseWidget from '@presentation/widgets/course/BuyCourseWidget.tsx';
 import { FC, memo } from 'react';
 
 type CourseListProps = {
@@ -36,14 +37,16 @@ const CourseList: FC<CourseListProps> = ({ className }) => {
 
   return (
     <List className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6', className)}>
-      {courses?.data &&
-        courses.data.map(course => (
-          <CourseCard
-            key={course.slug}
-            footerSlot={<CourseAction courseName={course.title} courseSlug={course.slug} />}
-            course={course}
-          />
-        ))}
+      <BuyCourseWidget>
+        {courses?.data &&
+          courses.data.map(course => (
+            <CourseCard
+              key={course.slug}
+              footerSlot={<CourseAction courseName={course.title} courseSlug={course.slug} />}
+              course={course}
+            />
+          ))}
+      </BuyCourseWidget>
     </List>
   );
 };
