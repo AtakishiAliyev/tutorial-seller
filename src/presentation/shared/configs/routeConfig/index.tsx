@@ -108,9 +108,7 @@ export const routeConfig: RouteObject[] = [
   },
   {
     path: '/payment/callback',
-    element: (
-        <SubmitPaymentPage />
-    )
+    element: <SubmitPaymentPage />,
   },
   {
     path: '*',

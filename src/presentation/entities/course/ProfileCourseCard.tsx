@@ -1,5 +1,6 @@
 import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
-import { Calendar } from 'lucide-react';
+// Добавляем новые иконки для статусов
+import { Calendar, CheckCircle, Hourglass, XCircle } from 'lucide-react';
 import { FC, memo, ReactNode } from 'react';
 
 type CourseCardProps = {
@@ -7,20 +8,56 @@ type CourseCardProps = {
   footerSlot?: ReactNode;
 };
 
-const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
+const PaymentStatusBadge: FC<{ payment: GetOwnedCoursesResponseDto['submittedPayment'] }> = ({
+  payment,
+}) => {
+  if (!payment) {
+    return null;
+  }
+
+  if (payment.status === 'APPROVED') {
+    return (
+      <div className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+        <CheckCircle className="mr-1.5 h-4 w-4" />
+        Ödənilib
+      </div>
+    );
+  }
+
+  if (payment.status === 'CREATED') {
+    return (
+      <div className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+        <Hourglass className="mr-1.5 h-4 w-4" />
+        Gözləmədədir
+      </div>
+    );
+  }
+
   return (
-    <div className="group flex flex-col sm:flex-row items-center rounded-xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg overflow-hidden">
-      <div className="w-full sm:w-48 h-48 sm:h-auto sm:self-stretch relative overflow-hidden">
+    <div className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+      <XCircle className="mr-1.5 h-4 w-4" />
+      Xəta baş verdi
+    </div>
+  );
+};
+
+const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
+  const payment = course.submittedPayment;
+  const displayAmount = payment ? payment.amount : course.salePrice;
+
+  return (
+    <div className="group flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg sm:flex-row">
+      <div className="relative h-48 w-full overflow-hidden sm:h-auto sm:w-48 sm:self-stretch">
         <img
-          className="w-full h-full transform object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full transform object-cover transition-transform duration-300 group-hover:scale-105"
           src={course.preview}
           alt={course.title}
         />
       </div>
-      <div className="flex-1 p-5">
-        <h3 className="text-lg font-semibold text-gray-800 ">{course.title}</h3>
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-lg font-semibold text-gray-800">{course.title}</h3>
         <div className="mt-2 flex items-center text-sm text-gray-500">
-          <Calendar className="mr-2" />
+          <Calendar size={16} className="mr-2 flex-shrink-0" />
           <span>
             Alınma tarixi:{' '}
             {new Date(course.userPurchases[0].purchaseDate).toLocaleDateString('az-AZ', {
@@ -30,10 +67,15 @@ const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
             })}
           </span>
         </div>
-        <div className="mt-4 flex items-center justify-between mb-4">
-          <p className="text-xl font-bold text-gray-900">{course.salePrice.toFixed(2)} AZN</p>
+
+        {/* Контейнер для цены и статуса */}
+        <div className="mt-4 flex flex-grow items-center justify-between">
+          <p className="text-xl font-bold text-gray-900">{displayAmount.toFixed(2)} AZN</p>
+          <PaymentStatusBadge payment={payment} />
         </div>
-        {footerSlot}
+
+        {/* Слот для футера теперь внизу */}
+        {footerSlot && <div className="mt-4">{footerSlot}</div>}
       </div>
     </div>
   );

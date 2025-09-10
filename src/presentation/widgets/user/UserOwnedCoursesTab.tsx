@@ -81,7 +81,6 @@ const UserOwnedCoursesTab: FC = () => {
     );
   }
 
-  // Success state
   return (
     <div className="flex flex-col gap-6">
       {courses?.data?.map(course => (
