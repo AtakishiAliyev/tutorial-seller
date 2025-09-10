@@ -24,7 +24,7 @@ const SubmitPayment = () => {
   }, [accessId, completePurchase, paymentId]);
 
   useEffect(() => {
-    if (error) {
+    if (error && error.length > 0) {
       setIsErrorModalOpen(true);
     }
   }, [error]);
@@ -115,7 +115,7 @@ const SubmitPayment = () => {
                   </div>
                   <div className="mt-4 pl-0 sm:pl-14">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {error?.length > 0 ||
+                      {error?.length > 0 &&
                         'Naməlum xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin və ya dəstək xidməti ilə əlaqə saxlayın.'}
                     </p>
                   </div>
