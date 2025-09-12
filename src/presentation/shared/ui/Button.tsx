@@ -5,7 +5,6 @@ import { Link, LinkProps } from 'react-router-dom';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 
-// Базовые пропсы для всех вариантов
 interface BaseButtonProps {
   variant?: ButtonVariant;
   className?: string;

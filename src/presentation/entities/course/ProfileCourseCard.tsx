@@ -1,7 +1,8 @@
 import { GetOwnedCoursesResponseDto } from '@infra/dto/course/GetOwnedCoursesResponseDto.ts';
-// Добавляем новые иконки для статусов
+import Button from '@presentation/shared/ui/Button';
 import { Calendar, CheckCircle, Hourglass, XCircle } from 'lucide-react';
 import { FC, memo, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 type CourseCardProps = {
   course: GetOwnedCoursesResponseDto;
@@ -44,6 +45,7 @@ const PaymentStatusBadge: FC<{ payment: GetOwnedCoursesResponseDto['submittedPay
 const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
   const payment = course.submittedPayment;
   const displayAmount = payment ? payment.amount : course.salePrice;
+  const isApproved = payment?.status === 'APPROVED';
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg sm:flex-row">
@@ -68,13 +70,19 @@ const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
           </span>
         </div>
 
-        {/* Контейнер для цены и статуса */}
         <div className="mt-4 flex flex-grow items-center justify-between">
           <p className="text-xl font-bold text-gray-900">{displayAmount.toFixed(2)} AZN</p>
           <PaymentStatusBadge payment={payment} />
         </div>
 
-        {/* Слот для футера теперь внизу */}
+        {isApproved && (
+          <div className="mt-4">
+            <Link to={`/courses/watch/${course.slug}`}>
+              <Button className="w-full max-w-[200px] mr-auto">Kursa Keçid</Button>
+            </Link>
+          </div>
+        )}
+
         {footerSlot && <div className="mt-4">{footerSlot}</div>}
       </div>
     </div>
