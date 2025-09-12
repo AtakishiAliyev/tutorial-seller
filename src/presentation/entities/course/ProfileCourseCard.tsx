@@ -78,7 +78,7 @@ const ProfileCourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
         {isApproved && (
           <div className="mt-4">
             <Link to={`/courses/watch/${course.slug}`}>
-              <Button className="w-full max-w-[200px] mr-auto">Kursa Keçid</Button>
+              <Button className="w-full md:max-w-[200px] mr-auto">Kursa Keçid</Button>
             </Link>
           </div>
         )}
