@@ -22,18 +22,16 @@ const CourseProgressTracker: FC<CourseProgressTrackerProps> = ({
 
   return (
     <div className="space-y-3">
-      {/* Заголовок и процент */}
       <div className="flex justify-between items-center">
         <Text size="p" weight="semibold" color="secondary" className="text-gray-900">
-          Course Progress
+          Kursun Gedişatı
         </Text>
         <Text size="subtitle" weight="semibold" color="muted" className="text-gray-600">
           {percentage}%
         </Text>
       </div>
 
-      {/* Прогресс-бар */}
-      <div className="w-full bg-gray-200 rounded-full h-2" title={`${percentage}% complete`}>
+      <div className="w-full bg-gray-200 rounded-full h-2" title={`${percentage}% tamamlanıb`}>
         <div
           className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${percentage}%` }}
@@ -44,29 +42,29 @@ const CourseProgressTracker: FC<CourseProgressTrackerProps> = ({
         />
       </div>
 
-      {/* Количество уроков */}
+      {/* Dərslərin sayı */}
       <Text size="subtitle" color="secondary">
-        {completedLessons} of {totalLessons} lessons completed
+        {totalLessons} dərsdən {completedLessons}-i tamamlandı
       </Text>
 
-      {/* Детализация по времени */}
+      {/* Vaxtın təfərrüatları */}
       <div className="space-y-1 pt-2">
         <div className="flex items-center">
           <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
           <Text size="subtitle" color="muted" className="flex-1">
-            Time Completed
+            Tamamlanan vaxt
           </Text>
           <Text size="subtitle" weight="medium" color="secondary">
-            {completedMinutes}min / {totalMinutes}min
+            {completedMinutes} dəq / {totalMinutes} dəq
           </Text>
         </div>
         <div className="flex items-center">
           <div className="w-4 h-4 mr-2 flex-shrink-0" aria-hidden="true" />
           <Text size="subtitle" color="muted" className="flex-1">
-            Estimated remaining
+            Təxmini qalan vaxt
           </Text>
           <Text size="subtitle" weight="medium" color="secondary">
-            {remainingMinutes}min
+            {remainingMinutes} dəq
           </Text>
         </div>
       </div>
