@@ -425,7 +425,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       {/* Видео элемент */}
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-contain"
         onClick={togglePlay}
         style={{ aspectRatio: '16/9' }}
         playsInline
