@@ -418,7 +418,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[80dvh] md:h-[500px] bg-black rounded-lg overflow-hidden group"
+      className="relative w-full h-[80dvh] md:h-[430px] md:w-[760px] bg-black rounded-lg overflow-hidden group"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isVideoPlaying && setShowControls(false)}
     >
