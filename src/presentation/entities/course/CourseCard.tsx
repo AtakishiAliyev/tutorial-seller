@@ -11,6 +11,10 @@ type CourseCardProps = {
 const CourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
   const hasDiscount = course.salePrice < course.basePrice;
 
+  const discountPercentage = hasDiscount
+    ? Math.round(((course.basePrice - course.salePrice) / course.basePrice) * 100)
+    : 0;
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200">
       <div className="aspect-video bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 relative overflow-hidden">
@@ -40,6 +44,11 @@ const CourseCard: FC<CourseCardProps> = ({ course, footerSlot }) => {
             <Text size="h4" weight="semibold">
               {course.basePrice.toFixed(2)} AZN
             </Text>
+          )}
+          {hasDiscount && (
+            <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+              -{discountPercentage}%
+            </span>
           )}
         </div>
 
