@@ -65,7 +65,7 @@ const CourseAction: FC<CourseActionProps> = props => {
           disabled={buyCourseLoading}
           className="w-full"
         >
-          Yenidən cəhd et
+          Kursu indi al
         </Button>
       );
     }
