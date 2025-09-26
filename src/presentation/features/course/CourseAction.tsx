@@ -9,7 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 
 type CourseActionProps = {
   courseSlug: string;
-  courseName: string;
+  courseName: string; // prop courseName не использовался, но я его оставил
 };
 
 const CourseAction: FC<CourseActionProps> = props => {
@@ -21,19 +21,54 @@ const CourseAction: FC<CourseActionProps> = props => {
     await buyCourse(courseSlug);
   }, [buyCourse, courseSlug]);
 
-  if (loading) return <Skeleton height={44} width="100%" borderRadius={8} />;
+  // 1. Обработка состояний загрузки и ошибок
+  if (loading) {
+    return <Skeleton height={44} width="100%" borderRadius={8} />;
+  }
 
-  if (error && error.statusCode !== 401)
+  if (error) {
+    if (error.statusCode === 401) {
+      return (
+        <Button variant="primary" to={`/login?courseToBuy=${courseSlug}`} className="w-full">
+          Almaq üçün daxil olun
+        </Button>
+      );
+    }
     return (
       <ErrorBox messages="Oops! Kursun mülkiyyətini yoxlayarkən problem yarandı... Zəhmət olmasa, səhifəni yenidən yükləyin" />
     );
+  }
 
-  if (error?.statusCode === 401) {
+  // 2. Главный "счастливый путь": пользователь владеет курсом и он активен
+  if (isOwned?.isOwned && isOwned.isActive) {
     return (
-      <Button variant="primary" to={`/login?courseToBuy=${courseSlug}`} className="w-full">
-        Almaq üçün daxil olun
+      <Button variant="primary" to={`/courses/watch/${courseSlug}`} className="w-full">
+        Kursu izləyin
       </Button>
     );
+  }
+
+  // 3. Пользователь владеет курсом, но он неактивен
+  if (isOwned?.isOwned && !isOwned.isActive) {
+    // Проверяем статус платежа, чтобы показать нужную кнопку
+    if (isOwned.payment?.status === 'APPROVED') {
+      return (
+        <Button variant="primary" disabled={true} className="w-full">
+          Bu kursa girişiniz yoxdur. Administrator ilə əlaqə saxlayın
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          variant="primary"
+          onClick={handleBuyCourse}
+          disabled={buyCourseLoading}
+          className="w-full"
+        >
+          Yenidən cəhd et
+        </Button>
+      );
+    }
   }
 
   if (isOwned?.isOwned === false) {
@@ -49,40 +84,7 @@ const CourseAction: FC<CourseActionProps> = props => {
     );
   }
 
-  if (
-    isOwned?.isOwned === true &&
-    isOwned?.isActive === false &&
-    isOwned.payment.status === 'APPROVED'
-  ) {
-    return (
-      <Button variant="primary" disabled={true} className="w-full">
-        Bu kursa girişiniz yoxdur. Administrator ilə əlaqə saxlayın
-      </Button>
-    );
-  }
-
-  if (
-    isOwned?.isOwned === true &&
-    isOwned?.isActive === false &&
-    isOwned.payment.status !== 'APPROVED'
-  ) {
-    return (
-      <Button
-        variant="primary"
-        onClick={handleBuyCourse}
-        disabled={buyCourseLoading}
-        className="w-full"
-      >
-        Yenidən cəhd et
-      </Button>
-    );
-  }
-
-  return (
-    <Button variant="primary" to={`/courses/watch/${courseSlug}`} className="w-full">
-      Kursu izləyin
-    </Button>
-  );
+  return null;
 };
 
 const MemoizedCourseAction = memo(CourseAction);
