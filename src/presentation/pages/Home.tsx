@@ -8,7 +8,6 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="container py-8">
-        {/* Kurslar Şəbəkəsi */}
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-6">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Bütün Kurslar</h2>

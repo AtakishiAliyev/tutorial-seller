@@ -14,19 +14,28 @@ type CourseListProps = {
 const CourseList: FC<CourseListProps> = ({ className }) => {
   const { courses, loading, error } = useCourseContext();
 
-  if (loading) return null;
-
-  if (error)
+  if (error) {
     return (
-      <ErrorBox messages="Oops! Kursları əldə edərkən nəsə səhv oldu... Zəhmət olmasa, bir az sonra yenidən cəhd edin." />
+      <ErrorBox
+        messages={`Oops! Kursları əldə edərkən nəsə səhv oldu... Zəhmət olmasa, bir az sonra yenidən cəhd edin. Status: ${error?.statusCode} Error: ${error?.message}`}
+      />
     );
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Yüklənir...</h3>
+        <p className="text-gray-600">Zəhmət olmasa, gözləyin.</p>
+      </div>
+    );
+  }
 
   if (courses?.data?.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          {/*<SearchOutlined className="text-gray-400 text-xl" />*/}
-        </div>
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"></div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">Heç bir kurs tapılmadı</h3>
         <p className="text-gray-600">
           Axtarış və ya filteri dəyişdirərək istədiyinizi tapmağa cəhd edin.
