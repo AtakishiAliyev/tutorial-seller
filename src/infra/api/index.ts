@@ -47,7 +47,6 @@ export const http = async <T, D = unknown>({
   method = 'GET',
   data,
 }: HttpProps<D>): Promise<T> => {
-  // Delete falsy params
   const filteredParams = removeFalsyObjKeys(params);
 
   const query = params

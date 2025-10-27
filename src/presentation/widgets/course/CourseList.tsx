@@ -5,7 +5,11 @@ import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import List from '@presentation/shared/ui/List.tsx';
 import { cn } from '@presentation/shared/utils/cn.ts';
 import BuyCourseWidget from '@presentation/widgets/course/BuyCourseWidget.tsx';
+import { BuyCourseModal } from '@presentation/widgets/credit/BuyCourseModal.tsx';
+import CreateCreditRequestWidget from '@presentation/widgets/credit/CreateCreditRequestWidget.tsx';
 import { FC, memo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { VisibilityProvider, VisibilityTarget, VisibilityTrigger } from 'react-visibility-manager';
 
 type CourseListProps = {
   className?: string;
@@ -13,6 +17,8 @@ type CourseListProps = {
 
 const CourseList: FC<CourseListProps> = ({ className }) => {
   const { courses, loading, error } = useCourseContext();
+  const [searchParams, _setSearchParams] = useSearchParams();
+  const courseCredit = searchParams.get('courseCredit') || '';
 
   if (error) {
     return (
@@ -45,18 +51,33 @@ const CourseList: FC<CourseListProps> = ({ className }) => {
   }
 
   return (
-    <List className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6', className)}>
-      <BuyCourseWidget>
-        {courses?.data &&
-          courses.data.map(course => (
-            <CourseCard
-              key={course.slug}
-              footerSlot={<CourseAction courseName={course.title} courseSlug={course.slug} />}
-              course={course}
-            />
-          ))}
-      </BuyCourseWidget>
-    </List>
+    <BuyCourseWidget>
+      <VisibilityProvider>
+        <CreateCreditRequestWidget>
+          <List className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6', className)}>
+            {courses?.data &&
+              courses.data.map(course => (
+                <CourseCard
+                  key={course.slug}
+                  footerSlot={
+                    <CourseAction
+                      courseId={course.id}
+                      courseName={course.title}
+                      courseSlug={course.slug}
+                    />
+                  }
+                  course={course}
+                />
+              ))}
+          </List>
+          <VisibilityTrigger propName="onClose" triggerKey="buy-course">
+            <VisibilityTarget isOpenPropName="isOpen" metaPropName="meta" targetKey="buy-course">
+              <BuyCourseModal />
+            </VisibilityTarget>
+          </VisibilityTrigger>
+        </CreateCreditRequestWidget>
+      </VisibilityProvider>
+    </BuyCourseWidget>
   );
 };
 

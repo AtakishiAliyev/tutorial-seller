@@ -1,25 +1,30 @@
 import 'react-loading-skeleton/dist/skeleton.css';
 
 import useIsCourseOwned from '@business/services/course/useIsCourseOwned.ts';
-import { useBuyCourseContract } from '@presentation/contracts/course/BuyCourseContract.tsx';
 import Button from '@presentation/shared/ui/Button';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import { FC, memo, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
+import { useVisibilityActions } from 'react-visibility-manager';
 
 type CourseActionProps = {
   courseSlug: string;
   courseName: string; // prop courseName не использовался, но я его оставил
+  courseId: string;
 };
 
 const CourseAction: FC<CourseActionProps> = props => {
-  const { courseSlug } = props;
+  const { courseSlug, courseId, courseName } = props;
   const { loading, error, isOwned } = useIsCourseOwned(props);
-  const { buyCourse, loading: buyCourseLoading } = useBuyCourseContract();
+  const { set } = useVisibilityActions();
 
   const handleBuyCourse = useCallback(async () => {
-    await buyCourse(courseSlug);
-  }, [buyCourse, courseSlug]);
+    set('buy-course', true, {
+      courseId,
+      courseSlug,
+      courseName,
+    });
+  }, [courseId, courseName, courseSlug, set]);
 
   // 1. Обработка состояний загрузки и ошибок
   if (loading) {
@@ -59,12 +64,7 @@ const CourseAction: FC<CourseActionProps> = props => {
       );
     } else {
       return (
-        <Button
-          variant="primary"
-          onClick={handleBuyCourse}
-          disabled={buyCourseLoading}
-          className="w-full"
-        >
+        <Button variant="primary" onClick={handleBuyCourse} className="w-full">
           Kursu indi al
         </Button>
       );
@@ -74,7 +74,6 @@ const CourseAction: FC<CourseActionProps> = props => {
   if (isOwned?.isOwned === false) {
     return (
       <Button
-        disabled={buyCourseLoading}
         onClick={handleBuyCourse}
         variant="primary"
         className="w-full flex items-center gap-2"
