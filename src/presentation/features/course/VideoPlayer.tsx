@@ -336,6 +336,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   };
 
   const changeQuality = (levelIndex: number) => {
+    console.log("Changing quality...")
     console.log("HLS Instance", hlsInstance);
     if (hlsInstance) {
       console.log("Current level index", hlsInstance.currentLevel);
