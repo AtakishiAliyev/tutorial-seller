@@ -206,7 +206,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       hls.loadSource(url);
       hls.attachMedia(video);
 
-      hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
+      hls.on(Hls.Events.MANIFEST_PARSED, (_event, _data) => {
         if (hlsRef.current) {
           const levels = hlsRef.current.levels.map((l, i) => ({
             label: `${l.height}p`,
