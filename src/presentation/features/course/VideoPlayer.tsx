@@ -252,6 +252,13 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     };
   }, [url]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.playbackRate = playbackRate;
+    }
+  }, [playbackRate, url]);
+
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -330,7 +337,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const changeQuality = (levelIndex: number) => {
     if (hlsInstance) {
       hlsInstance.currentLevel = levelIndex;
-      setQuality(levelIndex === -1 ? '1080p' : levelIndex.toString());
+      setQuality(levelIndex.toString());
       setShowSettings(false);
     }
   };
