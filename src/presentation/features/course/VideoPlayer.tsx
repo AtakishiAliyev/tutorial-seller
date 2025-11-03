@@ -197,6 +197,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 90,
+        startLevel: quality,
       });
 
       // !!! КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Присваиваем экземпляр в ref СРАЗУ ПОСЛЕ СОЗДАНИЯ !!!
@@ -338,7 +339,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const changeQuality = (levelIndex: number) => {
     if (hlsRef.current) {
       hlsRef.current.currentLevel = levelIndex;
-      setQuality(levelIndex.toString());
+      setQuality(levelIndex);
       setShowSettings(false);
     }
   };
@@ -607,34 +608,20 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                   <div>
                     <h3 className="text-white text-sm font-semibold mb-2">Keyfiyyət</h3>
                     <div className="space-y-1">
-                      {availableQualities.length > 0
-                        ? availableQualities.map(q => (
-                            <button
-                              key={q.value}
-                              onClick={() => changeQuality(q.value)}
-                              className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
-                                (q.value === -1 && quality === '1080p') ||
-                                quality === q.value.toString()
-                                  ? 'text-red-500 bg-red-500 bg-opacity-20'
-                                  : 'text-white hover:text-red-500 hover:bg-gray-800'
-                              }`}
-                            >
-                              {q.label}
-                            </button>
-                          ))
-                        : qualities.map(q => (
-                            <button
-                              key={q.value}
-                              onClick={() => changeQuality(+q.value)}
-                              className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
-                                quality === q.value
-                                  ? 'text-red-500 bg-red-500 bg-opacity-20'
-                                  : 'text-white hover:text-red-500 hover:bg-gray-800'
-                              }`}
-                            >
-                              {q.label}
-                            </button>
-                          ))}
+                      {/* Просто рендерим доступные качества, когда они есть */}
+                      {availableQualities.map(q => (
+                        <button
+                          key={q.value}
+                          onClick={() => changeQuality(q.value)}
+                          className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
+                            quality === q.value // Теперь это корректное сравнение number === number
+                              ? 'text-red-500 bg-red-500 bg-opacity-20'
+                              : 'text-white hover:text-red-500 hover:bg-gray-800'
+                          }`}
+                        >
+                          {q.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
