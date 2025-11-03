@@ -388,6 +388,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 90,
+        startLevel: quality,
       });
 
       hls.loadSource(url);
