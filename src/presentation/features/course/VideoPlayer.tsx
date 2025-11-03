@@ -63,7 +63,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const [availableQualities, setAvailableQualities] = useState<
     Array<{ label: string; value: number }>
   >([]);
-  const [hlsInstance, setHlsInstance] = useState<Hls | null>(null);
+  const hlsRef = useRef<Hls | null>(null);
 
   const qualities = [
     { label: '1080p', value: '1080p' },
@@ -164,9 +164,9 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     setHasError(false);
     setIsLoading(true);
 
-    if (hlsInstance) {
-      hlsInstance.destroy();
-      setHlsInstance(null);
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
     }
 
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -184,7 +184,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setHlsInstance(hls);
+        hlsRef.current = hls;
         setDuration(video.duration);
         video.currentTime = lastWatchedTime;
 
@@ -337,10 +337,10 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
 
   const changeQuality = (levelIndex: number) => {
     console.log("Changing quality...")
-    console.log("HLS Instance", hlsInstance);
-    if (hlsInstance) {
-      console.log("Current level index", hlsInstance.currentLevel);
-      hlsInstance.currentLevel = levelIndex;
+    console.log("HLS Instance", hlsRef);
+    if (hlsRef) {
+      console.log("Current level index", hlsRef.current.currentLevel);
+      hlsRef.current.currentLevel = levelIndex;
       setQuality(levelIndex.toString());
       setShowSettings(false);
     }
