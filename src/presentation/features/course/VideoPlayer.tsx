@@ -55,7 +55,6 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const [showControls, setShowControls] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [quality, setQuality] = useState('1080p');
-  console.log('Quality state', quality);
   const [showSettings, setShowSettings] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -337,15 +336,11 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   };
 
   const changeQuality = (levelIndex: number) => {
-    console.log('Changing quality...');
-    console.log('HLS Instance', hlsRef);
     if (hlsRef.current) {
-      console.log('Current level index', hlsRef.current.currentLevel);
       hlsRef.current.currentLevel = levelIndex;
       setQuality(levelIndex.toString());
       setShowSettings(false);
     }
-    console.log('New level index', levelIndex.toString());
   };
 
   const skip = (seconds: number) => {
