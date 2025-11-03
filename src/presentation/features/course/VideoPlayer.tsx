@@ -199,18 +199,15 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
         console.error('HLS error:', data.type, data.details, data);
+        H.log(`HLS fatal: ${data.type}`, 'ERROR', {
+          url,
+          type: data.type,
+          details: data.details,
+          error: data,
+          userAgent: navigator.userAgent,
+        });
 
         if (data.fatal) {
-          H.track(`HLS fatal: ${data.type}`, {
-            extra: {
-              url,
-              type: data.type,
-              details: data.details,
-              error: data,
-              userAgent: navigator.userAgent,
-            },
-          });
-
           setHasError(true);
 
           if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {

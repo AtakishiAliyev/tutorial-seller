@@ -8,7 +8,6 @@ import BuyCourseWidget from '@presentation/widgets/course/BuyCourseWidget.tsx';
 import { BuyCourseModal } from '@presentation/widgets/credit/BuyCourseModal.tsx';
 import CreateCreditRequestWidget from '@presentation/widgets/credit/CreateCreditRequestWidget.tsx';
 import { FC, memo } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { VisibilityProvider, VisibilityTarget, VisibilityTrigger } from 'react-visibility-manager';
 
 type CourseListProps = {
@@ -17,7 +16,6 @@ type CourseListProps = {
 
 const CourseList: FC<CourseListProps> = ({ className }) => {
   const { courses, loading, error } = useCourseContext();
-  const [searchParams, _setSearchParams] = useSearchParams();
 
   if (error) {
     return (
