@@ -1,6 +1,7 @@
 import useSaveLessonProgress from '@business/services/course/useSaveLessonProgress.ts';
 import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore';
 import { Lesson } from '@infra/dto/course/GetCourseDetailDto.ts';
+import { H } from 'highlight.run';
 import Hls from 'hls.js';
 import {
   Maximize,
@@ -20,6 +21,15 @@ type CustomVideoPlayerProps = {
   lessonId?: string;
   lastWatchedTime?: number; // Добавляем опциональный пропс для последнего просмотренного времени
 };
+
+H.init('jgo96ryg', {
+  serviceName: 'aga-mastery-web-app',
+  tracingOrigins: true,
+  networkRecording: {
+    enabled: true,
+    recordHeadersAndBody: true,
+  },
+});
 
 const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTime = 0 }) => {
   const currentLesson = useWatchCourseStore(state => state.currentLesson);
@@ -44,7 +54,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [quality, setQuality] = useState('auto');
+  const [quality, setQuality] = useState('1080p');
   const [showSettings, setShowSettings] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -54,19 +64,15 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   >([]);
   const [hlsInstance, setHlsInstance] = useState<Hls | null>(null);
 
-  // Доступные качества видео (fallback)
   const qualities = [
-    { label: 'Avtomatik', value: 'auto' },
     { label: '1080p', value: '1080p' },
     { label: '720p', value: '720p' },
     { label: '480p', value: '480p' },
     { label: '360p', value: '360p' },
   ];
 
-  // Скорости воспроизведения
   const playbackRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-  // Отслеживание проигрывания каждые 10 секунд
   useEffect(() => {
     if (isVideoPlaying) {
       // Запускаем интервал каждую секунду для точного отслеживания
@@ -123,12 +129,10 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     };
   }, [isVideoPlaying, currentLesson, saveLessonProgress, setCurrentLesson]);
 
-  // Сброс отслеживания при смене видео
   useEffect(() => {
     lastTrackedTimeRef.current = 0;
   }, [url]);
 
-  // Обработчик кликов вне меню настроек
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -155,44 +159,19 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     if (!video || !url) return;
 
     let hls: Hls | null = null;
+
     setHasError(false);
     setIsLoading(true);
 
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-      setIsLoading(false);
-    };
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime);
-    };
-
-    const handlePlay = () => {
-      startVideoPlaying();
-    };
-
-    const handlePause = () => {
-      stopVideoPlaying();
-    };
-
-    const handleError = () => {
-      setIsLoading(false);
-      setHasError(true);
-    };
-
-    // Очищаем предыдущий HLS инстанс
     if (hlsInstance) {
       hlsInstance.destroy();
       setHlsInstance(null);
     }
 
-    // Проверяем поддержку HLS
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Встроенная поддержка HLS (Safari)
       video.src = url;
       video.load();
     } else if (Hls.isSupported()) {
-      // Используем HLS.js для других браузеров
       hls = new Hls({
         debug: false,
         enableWorker: true,
@@ -204,71 +183,75 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log('HLS manifest parsed successfully');
         setHlsInstance(hls);
+        setDuration(video.duration);
+        video.currentTime = lastWatchedTime;
 
-        // Получаем доступные качества
         if (hls && hls.levels) {
-          const levels = hls.levels;
-          // eslint-disable-next-line no-shadow
-          const qualities = levels.map((level, index) => ({
-            label: `${level.height}p`,
-            value: index,
+          const levels = hls.levels.map((l, i) => ({
+            label: `${l.height}p`,
+            value: i,
           }));
-          qualities.unshift({ label: 'Avtomatik', value: -1 });
-          setAvailableQualities(qualities);
+          levels.unshift({ label: 'Auto', value: -1 });
+          setAvailableQualities(levels);
         }
       });
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        console.error('HLS error:', data);
+        console.error('HLS error:', data.type, data.details, data);
+
         if (data.fatal) {
-          setIsLoading(false);
+          H.track(`HLS fatal: ${data.type}`, {
+            extra: {
+              url,
+              type: data.type,
+              details: data.details,
+              error: data,
+              userAgent: navigator.userAgent,
+            },
+          });
+
           setHasError(true);
 
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error('Fatal network error encountered');
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              console.error('Fatal media error encountered');
-              try {
-                hls?.recoverMediaError();
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              } catch (_error) {
-                console.error('Cannot recover from media error');
-              }
-              break;
-            default:
-              console.error('Fatal error encountered');
-              break;
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            hls?.startLoad();
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            hls?.recoverMediaError();
+          } else {
+            hls?.destroy();
           }
         }
       });
     } else {
-      // Fallback для обычных видео файлов
-      console.warn('HLS is not supported, fallback to native video');
       video.src = url;
       video.load();
     }
 
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('timeupdate', handleTimeUpdate);
+    const handleLoaded = () => {
+      setDuration(video.duration);
+      setIsLoading(false);
+    };
+
+    const handleTime = () => setCurrentTime(video.currentTime);
+    const handlePlay = () => startVideoPlaying();
+    const handlePause = () => stopVideoPlaying();
+    const handleError = () => setHasError(true);
+
+    video.addEventListener('loadedmetadata', handleLoaded);
+    video.addEventListener('timeupdate', handleTime);
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
     video.addEventListener('error', handleError);
-    video.currentTime = lastWatchedTime; // Устанавливаем начальное время воспроизведения
+
+    video.currentTime = lastWatchedTime;
 
     return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('loadedmetadata', handleLoaded);
+      video.removeEventListener('timeupdate', handleTime);
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
       video.removeEventListener('error', handleError);
-
-      if (hls) {
-        hls.destroy();
-      }
+      if (hls) hls.destroy();
     };
   }, [url]);
 
@@ -350,7 +333,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const changeQuality = (levelIndex: number) => {
     if (hlsInstance) {
       hlsInstance.currentLevel = levelIndex;
-      setQuality(levelIndex === -1 ? 'auto' : levelIndex.toString());
+      setQuality(levelIndex === -1 ? '1080p' : levelIndex.toString());
       setShowSettings(false);
     }
   };
@@ -379,6 +362,33 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const retryVideo = () => {
+    setHasError(false);
+    setIsLoading(true);
+
+    if (hlsInstance) {
+      hlsInstance.destroy();
+      setHlsInstance(null);
+    }
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    lastTrackedTimeRef.current = 0;
+    video.src = '';
+    video.load();
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      setHlsInstance(hls);
+    } else {
+      video.src = url;
+      video.load();
+    }
+  };
+
   const showControlsTemporarily = () => {
     setShowControls(true);
     if (controlsTimeout) {
@@ -388,31 +398,12 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       if (isVideoPlaying) {
         setShowControls(false);
       }
-    }, 3000);
+    }, 5000);
     setControlsTimeout(timeout);
   };
 
   const handleMouseMove = () => {
     showControlsTemporarily();
-  };
-
-  const retryVideo = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    setHasError(false);
-    setIsLoading(true);
-
-    // Перезагружаем видео
-    if (hlsInstance) {
-      hlsInstance.destroy();
-      setHlsInstance(null);
-    }
-
-    // Сбрасываем отслеживание
-    lastTrackedTimeRef.current = 0;
-
-    video.load();
   };
 
   return (
@@ -590,7 +581,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                               key={q.value}
                               onClick={() => changeQuality(q.value)}
                               className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
-                                (q.value === -1 && quality === 'auto') ||
+                                (q.value === -1 && quality === '1080p') ||
                                 quality === q.value.toString()
                                   ? 'text-red-500 bg-red-500 bg-opacity-20'
                                   : 'text-white hover:text-red-500 hover:bg-gray-800'

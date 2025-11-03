@@ -18,7 +18,6 @@ type CourseListProps = {
 const CourseList: FC<CourseListProps> = ({ className }) => {
   const { courses, loading, error } = useCourseContext();
   const [searchParams, _setSearchParams] = useSearchParams();
-  const courseCredit = searchParams.get('courseCredit') || '';
 
   if (error) {
     return (

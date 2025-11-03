@@ -11,21 +11,21 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
   },
-  // build: {
-  //   rollupOptions: {
-  //     output: {
-  //       manualChunks: {
-  //         vendor: ['react', 'react-dom'],
-  //         forms: [
-  //           'react-hook-form',
-  //           'zod'
-  //         ],
-  //         utilities: [
-  //           'uuid',
-  //           'debounce',
-  //         ]
-  //       }
-  //     }
-  //   }
-  // },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          forms: [
+            'react-hook-form',
+            'zod'
+          ],
+          logs: [
+            'highlight.run',
+            '@highlight-run/react'
+          ]
+        }
+      }
+    }
+  },
 })

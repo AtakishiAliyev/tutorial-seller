@@ -421,6 +421,11 @@
     "@tanstack/react-virtual" "^3.13.9"
     use-sync-external-store "^1.5.0"
 
+"@highlight-run/react@^21.0.0":
+  version "21.0.0"
+  resolved "https://registry.yarnpkg.com/@highlight-run/react/-/react-21.0.0.tgz#9178c4507c5af1093ae3e101583f16e8e22a8624"
+  integrity sha512-bNfMMTbCtg+xXqVxAluovHWdJXWmgeHQWVcJsFMjp8INAYY9RaYrJ98Xf0Fr/PLru8udPE7396qPafAdN3O2/w==
+
 "@hookform/resolvers@^5.1.1":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-5.1.1.tgz#91074ba4fb749cc74e6465e75d38256146b0c4ab"
@@ -493,6 +498,25 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@launchdarkly/js-client-sdk-common@1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@launchdarkly/js-client-sdk-common/-/js-client-sdk-common-1.13.0.tgz#51a10732bb742c2ea4e1d60f7071a30f9ce17b77"
+  integrity sha512-3u3nWLKfu7ADbrBlbYq1rDROXG1WcRGRGhHFyAjtDPCCh783sPIb1frC1n4tj6b64bustVrZvLR9dGrQlp6tJQ==
+  dependencies:
+    "@launchdarkly/js-sdk-common" "2.17.0"
+
+"@launchdarkly/js-client-sdk@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@launchdarkly/js-client-sdk/-/js-client-sdk-0.6.0.tgz#a127c5e57b9f77356b19bff540404c71eb33ed16"
+  integrity sha512-9aBgpGKXxaiPudNuQ9MoS8wFSIR1h0P2EFDP2veNJG7tBuxzDKfH3hzjW01C4/WyWN6bk7P7XKwisxw775klBQ==
+  dependencies:
+    "@launchdarkly/js-client-sdk-common" "1.13.0"
+
+"@launchdarkly/js-sdk-common@2.17.0":
+  version "2.17.0"
+  resolved "https://registry.yarnpkg.com/@launchdarkly/js-sdk-common/-/js-sdk-common-2.17.0.tgz#963978fc1d64f7166e72928c101805a3899b0142"
+  integrity sha512-HYQNc4xbE58hBOO1yZsqE+BHOC36AYrHPZ5hwvlHoZRSsaoYCPM+Q/n+O+N3JhWXTqGsu6SwUzqUzTyxg8prGg==
 
 "@mux/mux-data-google-ima@0.2.8":
   version "0.2.8"
@@ -2201,6 +2225,14 @@ hasown@^2.0.2:
   integrity sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==
   dependencies:
     function-bind "^1.1.2"
+
+highlight.run@^9.22.4:
+  version "9.22.4"
+  resolved "https://registry.yarnpkg.com/highlight.run/-/highlight.run-9.22.4.tgz#f325620a0c5099db601dc6078f52cc9300aeca08"
+  integrity sha512-GpLtU0FuM7eVB/Xp7yFgxIr9dMO6fu44LIe8gNRymK1kwMUbM3mf6+ElhubcgPfKtiWlwwcxzGOpasm56JP7hw==
+  dependencies:
+    "@launchdarkly/js-client-sdk" "^0.6.0"
+    imurmurhash "^0.1.4"
 
 hls-video-element@^1.5.6:
   version "1.5.6"
