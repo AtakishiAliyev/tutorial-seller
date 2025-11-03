@@ -159,41 +159,61 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     const video = videoRef.current;
     if (!video || !url) return;
 
-    let hls: Hls | null = null;
-
-    setHasError(false);
+    // Сбрасываем состояние при каждой смене URL
     setIsLoading(true);
+    setHasError(false);
 
+    // Уничтожаем предыдущий экземпляр HLS, если он существует
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
     }
 
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = url;
-      video.load();
-    } else if (Hls.isSupported()) {
-      hls = new Hls({
+    // --- Обработчики событий для видео элемента ---
+    // Они будут использоваться как для HLS, так и для нативного воспроизведения
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      video.currentTime = lastWatchedTime;
+      setIsLoading(false);
+    };
+    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+    const handlePlay = () => startVideoPlaying();
+    const handlePause = () => stopVideoPlaying();
+    const handleError = () => {
+      setIsLoading(false);
+      setHasError(true);
+    };
+
+    // Добавляем обработчики к видео элементу
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+    video.addEventListener('error', handleError);
+
+    // --- Логика инициализации HLS.js ---
+    if (Hls.isSupported()) {
+      const hls = new Hls({
         debug: false,
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 90,
       });
 
+      // !!! КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Присваиваем экземпляр в ref СРАЗУ ПОСЛЕ СОЗДАНИЯ !!!
+      // Теперь hlsRef.current больше не будет null в других частях компонента.
+      hlsRef.current = hls;
+
       hls.loadSource(url);
       hls.attachMedia(video);
 
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        hlsRef.current = hls;
-        setDuration(video.duration);
-        video.currentTime = lastWatchedTime;
-
-        if (hls && hls.levels) {
-          const levels = hls.levels.map((l, i) => ({
+      hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
+        if (hlsRef.current) {
+          const levels = hlsRef.current.levels.map((l, i) => ({
             label: `${l.height}p`,
             value: i,
           }));
-          levels.unshift({ label: 'Auto', value: -1 });
+          levels.unshift({ label: 'Auto', value: -1 }); // -1 это стандартное значение для авто-качества в hls.js
           setAvailableQualities(levels);
         }
       });
@@ -207,49 +227,30 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
           error: data,
           userAgent: navigator.userAgent,
         });
-
         if (data.fatal) {
-          setHasError(true);
-
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-            hls?.startLoad();
-          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-            hls?.recoverMediaError();
-          } else {
-            hls?.destroy();
-          }
+          handleError(); // Используем общий обработчик ошибок
         }
       });
-    } else {
+    }
+    // --- Логика для нативного воспроизведения HLS (например, в Safari) ---
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = url;
       video.load();
     }
 
-    const handleLoaded = () => {
-      setDuration(video.duration);
-      setIsLoading(false);
-    };
-
-    const handleTime = () => setCurrentTime(video.currentTime);
-    const handlePlay = () => startVideoPlaying();
-    const handlePause = () => stopVideoPlaying();
-    const handleError = () => setHasError(true);
-
-    video.addEventListener('loadedmetadata', handleLoaded);
-    video.addEventListener('timeupdate', handleTime);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('error', handleError);
-
-    video.currentTime = lastWatchedTime;
-
+    // --- Функция очистки ---
+    // Этот код будет вызван при размонтировании компонента или при изменении url
     return () => {
-      video.removeEventListener('loadedmetadata', handleLoaded);
-      video.removeEventListener('timeupdate', handleTime);
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+      // Обязательно удаляем все обработчики, чтобы избежать утечек памяти
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
       video.removeEventListener('error', handleError);
-      if (hls) hls.destroy();
     };
   }, [url]);
 
@@ -338,7 +339,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   const changeQuality = (levelIndex: number) => {
     console.log("Changing quality...")
     console.log("HLS Instance", hlsRef);
-    if (hlsRef) {
+    if (hlsRef.current) {
       console.log("Current level index", hlsRef.current.currentLevel);
       hlsRef.current.currentLevel = levelIndex;
       setQuality(levelIndex.toString());
@@ -375,24 +376,51 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     setHasError(false);
     setIsLoading(true);
 
-    if (hlsInstance) {
-      hlsInstance.destroy();
-      setHlsInstance(null);
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
     }
 
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !url) return;
 
-    lastTrackedTimeRef.current = 0;
     video.src = '';
     video.load();
 
     if (Hls.isSupported()) {
-      const hls = new Hls();
+      const hls = new Hls({
+        debug: false,
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 90,
+      });
+
       hls.loadSource(url);
       hls.attachMedia(video);
-      setHlsInstance(hls);
-    } else {
+
+      hlsRef.current = hls;
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setDuration(video.duration);
+        video.currentTime = lastWatchedTime;
+        if (hls.levels) {
+          const levels = hls.levels.map((l, i) => ({
+            label: `${l.height}p`,
+            value: i,
+          }));
+          levels.unshift({ label: 'Auto', value: -1 });
+          setAvailableQualities(levels);
+        }
+      });
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.error('HLS error on retry:', data.type, data.details, data);
+        if (data.fatal) {
+          setHasError(true);
+        }
+      });
+
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = url;
       video.load();
     }
