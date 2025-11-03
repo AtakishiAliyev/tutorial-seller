@@ -251,7 +251,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
       video.removeEventListener('error', handleError);
       if (hls) hls.destroy();
     };
-  }, [hlsInstance, lastWatchedTime, startVideoPlaying, stopVideoPlaying, url]);
+  }, [url]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -602,7 +602,7 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                         : qualities.map(q => (
                             <button
                               key={q.value}
-                              onClick={() => changeQuality(q.value)}
+                              onClick={() => changeQuality(+q.value)}
                               className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
                                 quality === q.value
                                   ? 'text-red-500 bg-red-500 bg-opacity-20'
