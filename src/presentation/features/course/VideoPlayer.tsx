@@ -64,14 +64,11 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   >([]);
   const hlsRef = useRef<Hls | null>(null);
 
-  const qualities = [
-    { label: '1080p', value: '1080p' },
-    { label: '720p', value: '720p' },
-    { label: '480p', value: '480p' },
-    { label: '360p', value: '360p' },
-  ];
-
   const playbackRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+  useEffect(() => {
+    setQuality(-1);
+  }, [url]);
 
   useEffect(() => {
     if (isVideoPlaying) {
