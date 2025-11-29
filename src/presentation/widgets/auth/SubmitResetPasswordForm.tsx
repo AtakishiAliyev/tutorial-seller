@@ -59,6 +59,17 @@ const SubmitResetPasswordForm: FC<SubmitResetPasswordFormProps> = ({
           )}
         </Input.Group>
 
+        <Input.Group id="submitPassword" variant={errors.submitPassword ? 'error' : 'default'}>
+          <Input.Label>Şifrəni Təsdiqlə</Input.Label>
+          <PasswordInput
+            placeholder="Şifrənizi yenidən daxil edin"
+            {...register('submitPassword')}
+          />
+          {errors.submitPassword && (
+            <Input.ErrorMessage>{errors.submitPassword.message as string}</Input.ErrorMessage>
+          )}
+        </Input.Group>
+
         <Button htmlType="submit" variant="primary" className="w-full mt-2" disabled={loading}>
           {loading ? 'Yenilənir...' : 'Yenilə'}
         </Button>
