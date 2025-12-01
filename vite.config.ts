@@ -26,7 +26,6 @@ export default defineConfig({
             'hls.js'
           ],
           logs: [
-            'highlight.run',
             '@highlight-run/react'
           ]
         }
