@@ -6,7 +6,7 @@ import { Lesson } from '@infra/dto/course/GetCourseDetailDto.ts';
 import Hls from 'hls.js';
 // @ts-expect-error Plyr import is correct
 import Plyr from 'plyr';
-import { FC, useEffect, useRef } from 'react';
+import { FC, memo, useEffect, useRef } from 'react';
 
 type CustomVideoPlayerProps = {
   url: string;
@@ -193,4 +193,6 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   );
 };
 
-export default VideoPlayer;
+const MemoizedVideoPlayer = memo(VideoPlayer);
+
+export default MemoizedVideoPlayer;
