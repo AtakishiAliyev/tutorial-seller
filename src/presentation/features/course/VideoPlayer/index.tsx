@@ -54,11 +54,11 @@ const Index: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTime = 0 
       'progress',
       'current-time',
       'duration',
-      !isMobile && 'mute',
+      'mute',
       !isMobile && 'volume',
       'captions',
       'settings',
-      'pip',
+      !isMobile && 'pip',
       'airplay',
       'fullscreen',
     ].filter(Boolean) as string[];
