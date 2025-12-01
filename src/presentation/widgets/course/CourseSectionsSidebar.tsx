@@ -134,9 +134,38 @@ const CourseSectionsSidebar: FC = () => {
   }, [isMobile, set, state]);
 
   if (loading || !data) {
+    if (isMobile) {
+      return null;
+    }
+
     return (
-      <div className="flex items-center justify-center h-full">
-        <p>Loading...</p>
+      <div className="flex flex-col h-full animate-pulse">
+        {/* Content */}
+        <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5">
+          {/* 3 skeleton sections */}
+          {[1, 2, 3, 5, 6].map(i => (
+            <div key={i} className="space-y-3">
+              {/* Section header */}
+              <div className="flex items-center justify-between">
+                <div className="h-4 w-40 bg-gray-200 rounded-md" />
+                <div className="h-4 w-4 bg-gray-200 rounded-md" />
+              </div>
+
+              {/* 3 lessons */}
+              <div className="ml-2 sm:ml-4 space-y-2">
+                {[1, 2, 3].map(j => (
+                  <div key={j} className="h-3 w-3/4 bg-gray-200 rounded-md" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom progress bar */}
+        <div className="border-t border-gray-200 p-4 sm:p-6 space-y-3">
+          <div className="h-4 w-48 bg-gray-200 rounded-md" />
+          <div className="w-full h-3 bg-gray-200 rounded-full" />
+        </div>
       </div>
     );
   }

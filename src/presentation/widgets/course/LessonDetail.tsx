@@ -37,8 +37,28 @@ const LessonDetail: FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">Yüklənir...</p>
+      <div className="flex flex-col flex-1 px-5 animate-pulse">
+        <div className="bg-white flex items-center border-b border-gray-200 py-6 justify-between">
+          <div className="w-12 h-10 bg-gray-200 rounded-md" />
+          <div className="w-40 h-6 bg-gray-200 rounded-md" />
+        </div>
+
+        <div className="mt-6 mx-auto w-full lg:w-[750px]">
+          <div className="w-full h-[400px] bg-gray-200 rounded-lg" />
+        </div>
+
+        <div className="bg-white rounded-b-lg shadow-sm border p-8 mt-6 space-y-4">
+          <div className="h-6 w-2/3 bg-gray-200 rounded-md" />
+          <div className="h-4 w-full bg-gray-200 rounded-md" />
+          <div className="h-4 w-5/6 bg-gray-200 rounded-md" />
+          <div className="h-4 w-4/6 bg-gray-200 rounded-md" />
+
+          <div className="mt-6 space-y-3">
+            <div className="h-5 w-32 bg-gray-200 rounded-md" />
+            <div className="h-4 w-full bg-gray-200 rounded-md" />
+            <div className="h-4 w-5/6 bg-gray-200 rounded-md" />
+          </div>
+        </div>
       </div>
     );
   }

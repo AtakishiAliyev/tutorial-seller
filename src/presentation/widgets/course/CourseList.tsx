@@ -27,10 +27,11 @@ const CourseList: FC<CourseListProps> = ({ className }) => {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin mx-auto mb-4"></div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Yüklənir...</h3>
-        <p className="text-gray-600">Zəhmət olmasa, gözləyin.</p>
+      <div className="flex items-center justify-center h-full">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-600 animate-pulse">Yüklənir...</p>
+        </div>
       </div>
     );
   }

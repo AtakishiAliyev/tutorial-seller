@@ -20,6 +20,11 @@ export default defineConfig({
             'react-hook-form',
             'zod'
           ],
+          player: [
+            'plyr-react',
+            'plyr',
+            'hls.js'
+          ],
           logs: [
             'highlight.run',
             '@highlight-run/react'

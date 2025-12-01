@@ -1,104 +1,161 @@
+import 'plyr/dist/plyr.css';
+
 import useSaveLessonProgress from '@business/services/course/useSaveLessonProgress.ts';
 import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore';
 import { Lesson } from '@infra/dto/course/GetCourseDetailDto.ts';
-import { H } from 'highlight.run';
 import Hls from 'hls.js';
-import {
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
-  Settings,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  VolumeX,
-} from 'lucide-react';
-import { ChangeEvent, FC, memo, useEffect, useRef, useState } from 'react';
+// @ts-expect-error Plyr import is correct
+import Plyr from 'plyr';
+import { FC, useEffect, useRef } from 'react';
 
 type CustomVideoPlayerProps = {
   url: string;
   lessonId?: string;
-  lastWatchedTime?: number; // Добавляем опциональный пропс для последнего просмотренного времени
+  lastWatchedTime?: number;
 };
 
-H.init('jgo96ryg', {
-  serviceName: 'aga-mastery-web-app',
-  tracingOrigins: true,
-  networkRecording: {
-    enabled: true,
-    recordHeadersAndBody: true,
-  },
-});
-
 const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTime = 0 }) => {
-  const currentLesson = useWatchCourseStore(state => state.currentLesson);
-  const setCurrentLesson = useWatchCourseStore(state => state.setCurrentLesson);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
+  const plyrRef = useRef<Plyr | null>(null);
+
+  const lastTrackedTimeRef = useRef<number>(lastWatchedTime);
+  const isCompletedRef = useRef<boolean>(false);
+
+  const { currentLesson, setCurrentLesson, startVideoPlaying, stopVideoPlaying } =
+    useWatchCourseStore();
   const { saveLessonProgress } = useSaveLessonProgress({
     lessonId: lessonId || '',
     invalidateQueries: true,
     showSuccessNotification: false,
     showErrorNotification: true,
   });
-  const { isVideoPlaying, startVideoPlaying, stopVideoPlaying } = useWatchCourseStore();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const settingsRef = useRef<HTMLDivElement>(null);
-  const trackingIntervalRef = useRef<number | null>(null); // Реф для интервала отслеживания
-  const lastTrackedTimeRef = useRef<number>(lastWatchedTime); // Реф для отслеживания последнего времени
-
-  const [currentTime, setCurrentTime] = useState(lastWatchedTime);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [quality, setQuality] = useState(3);
-  const [showSettings, setShowSettings] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [controlsTimeout, setControlsTimeout] = useState<number | null>(null);
-  const [availableQualities, setAvailableQualities] = useState<
-    Array<{ label: string; value: number }>
-  >([]);
-  const hlsRef = useRef<Hls | null>(null);
-
-  const playbackRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   useEffect(() => {
-    setQuality(3);
-  }, [url]);
+    if (currentLesson?.userProgresses?.isCompleted) {
+      isCompletedRef.current = true;
+    }
+  }, [currentLesson]);
 
   useEffect(() => {
-    if (isVideoPlaying) {
-      // Запускаем интервал каждую секунду для точного отслеживания
-      trackingIntervalRef.current = window.setInterval(() => {
-        const video = videoRef.current;
-        if (!video) return;
+    const video = videoRef.current;
+    if (!video || !url) return;
 
-        const currentVideoTime = Math.floor(video.currentTime);
-        const lastTrackedTime = lastTrackedTimeRef.current;
+    isCompletedRef.current = currentLesson?.userProgresses?.isCompleted || false;
+    lastTrackedTimeRef.current = lastWatchedTime;
 
-        // Проверяем, прошло ли 10 секунд с последнего трекинга
-        if (currentVideoTime >= lastTrackedTime + 10) {
-          lastTrackedTimeRef.current = Math.floor(currentVideoTime / 10) * 10;
-          (async () => {
-            await saveLessonProgress({
-              progressSeconds: lastTrackedTimeRef.current,
-            });
-          })();
+    const defaultOptions: Plyr.Options = {
+      controls: [
+        'play-large',
+        'play',
+        'progress',
+        'current-time',
+        'duration',
+        'mute',
+        'volume',
+        'captions',
+        'settings',
+        'pip',
+        'airplay',
+        'fullscreen',
+      ],
+      settings: ['captions', 'quality', 'speed'],
+      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+      autoplay: false,
+      ratio: '16:9',
+    };
+
+    let player: Plyr;
+
+    const initPlayer = () => {
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          maxMaxBufferLength: 30,
+        });
+        hlsRef.current = hls;
+
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          const availableQualities = hls.levels.map(l => l.height);
+
+          defaultOptions.quality = {
+            default: availableQualities[0],
+            options: availableQualities,
+            forced: true,
+            onChange: (newQuality: number) => {
+              hls.levels.forEach((level, levelIndex) => {
+                if (level.height === newQuality) {
+                  hls.currentLevel = levelIndex;
+                }
+              });
+            },
+          };
+
+          player = new Plyr(video, defaultOptions);
+          plyrRef.current = player;
+
+          if (lastWatchedTime > 0) {
+            video.currentTime = lastWatchedTime;
+          }
+
+          setupPlyrListeners(player);
+        });
+
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          console.error('HLS Error:', data);
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                hls.destroy();
+                break;
+            }
+          }
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Fallback for Safari (Native HLS)
+        video.src = url;
+        player = new Plyr(video, defaultOptions);
+        plyrRef.current = player;
+
+        if (lastWatchedTime > 0) {
+          video.currentTime = lastWatchedTime;
+        }
+        setupPlyrListeners(player);
+      }
+    };
+
+    const setupPlyrListeners = (plyrInstance: Plyr) => {
+      plyrInstance.on('play', () => startVideoPlaying());
+      plyrInstance.on('pause', () => stopVideoPlaying());
+
+      // @ts-expect-error I don't know the real type of event here
+      plyrInstance.on('timeupdate', event => {
+        const instance = event.detail.plyr;
+        const currentTime = instance.currentTime;
+        const duration = instance.duration;
+
+        if (currentTime > lastTrackedTimeRef.current + 10) {
+          const nextMilestone = Math.floor(currentTime / 10) * 10;
+          lastTrackedTimeRef.current = nextMilestone;
+
+          void saveLessonProgress({
+            progressSeconds: nextMilestone,
+          });
         }
 
-        if (
-          video.duration > 0 &&
-          currentVideoTime >= video.duration * 0.95 &&
-          currentLesson?.userProgresses?.isCompleted === false
-        ) {
-          (async () => {
-            await saveLessonProgress({
-              isCompleted: true,
-            });
+        if (duration > 0 && currentTime >= duration * 0.95 && !isCompletedRef.current) {
+          isCompletedRef.current = true;
+          void saveLessonProgress({ isCompleted: true });
+
+          if (currentLesson) {
             setCurrentLesson({
               ...currentLesson,
               userProgresses: {
@@ -106,539 +163,34 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
                 isCompleted: true,
               },
             } as Lesson);
-          })();
-        }
-      }, 1000);
-    } else {
-      // Очищаем интервал когда видео на паузе
-      if (trackingIntervalRef.current) {
-        clearInterval(trackingIntervalRef.current);
-        trackingIntervalRef.current = null;
-      }
-    }
-
-    // Очистка при размонтировании или изменении состояния
-    return () => {
-      if (trackingIntervalRef.current) {
-        clearInterval(trackingIntervalRef.current);
-        trackingIntervalRef.current = null;
-      }
-    };
-  }, [isVideoPlaying, currentLesson, saveLessonProgress, setCurrentLesson]);
-
-  useEffect(() => {
-    lastTrackedTimeRef.current = 0;
-  }, [url]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showSettings &&
-        settingsRef.current &&
-        !settingsRef.current.contains(event.target as Node)
-      ) {
-        // Проверяем, что клик не по кнопке настроек
-        const settingsButton = containerRef.current?.querySelector('[data-settings-button]');
-        if (settingsButton && !settingsButton.contains(event.target as Node)) {
-          setShowSettings(false);
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSettings]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !url) return;
-
-    // Сбрасываем состояние при каждой смене URL
-    setIsLoading(true);
-    setHasError(false);
-
-    // Уничтожаем предыдущий экземпляр HLS, если он существует
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-
-    // --- Обработчики событий для видео элемента ---
-    // Они будут использоваться как для HLS, так и для нативного воспроизведения
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-      video.currentTime = lastWatchedTime;
-      setIsLoading(false);
-    };
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handlePlay = () => startVideoPlaying();
-    const handlePause = () => stopVideoPlaying();
-    const handleError = () => {
-      setIsLoading(false);
-      setHasError(true);
-    };
-
-    // Добавляем обработчики к видео элементу
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('error', handleError);
-
-    // --- Логика инициализации HLS.js ---
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        debug: false,
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 90,
-        startLevel: quality,
-      });
-
-      // !!! КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Присваиваем экземпляр в ref СРАЗУ ПОСЛЕ СОЗДАНИЯ !!!
-      // Теперь hlsRef.current больше не будет null в других частях компонента.
-      hlsRef.current = hls;
-
-      hls.loadSource(url);
-      hls.attachMedia(video);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, (_event, _data) => {
-        if (hlsRef.current) {
-          const levels = hlsRef.current.levels.map((l, i) => ({
-            label: `${l.height}p`,
-            value: i,
-          }));
-          levels.unshift({ label: 'Auto', value: -1 }); // -1 это стандартное значение для авто-качества в hls.js
-          setAvailableQualities(levels);
+          }
         }
       });
+    };
 
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        console.error('HLS error:', data.type, data.details, data);
-        H.log(`HLS fatal: ${data.type}`, 'ERROR', {
-          url,
-          type: data.type,
-          details: data.details,
-          error: data,
-          userAgent: navigator.userAgent,
-        });
-        if (data.fatal) {
-          handleError(); // Используем общий обработчик ошибок
-        }
-      });
-    }
-    // --- Логика для нативного воспроизведения HLS (например, в Safari) ---
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = url;
-      video.load();
-    }
+    initPlayer();
 
-    // --- Функция очистки ---
-    // Этот код будет вызван при размонтировании компонента или при изменении url
     return () => {
       if (hlsRef.current) {
+        hlsRef.current.detachMedia();
         hlsRef.current.destroy();
         hlsRef.current = null;
       }
-      // Обязательно удаляем все обработчики, чтобы избежать утечек памяти
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('error', handleError);
+      if (plyrRef.current) {
+        plyrRef.current.destroy();
+        plyrRef.current = null;
+      }
     };
   }, [url]);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.playbackRate = playbackRate;
-    }
-  }, [playbackRate, url]);
-
-  const togglePlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isVideoPlaying) {
-      video.pause();
-    } else {
-      video.play().catch(error => {
-        console.error('Error playing video:', error);
-        setHasError(true);
-      });
-    }
-  };
-
-  const handleSeek = (e: ChangeEvent<HTMLInputElement>) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newTime = parseFloat(e.target.value);
-    video.currentTime = newTime;
-    setCurrentTime(newTime);
-
-    // Обновляем последнее отслеженное время при перемотке
-    lastTrackedTimeRef.current = Math.floor(newTime / 10) * 10;
-  };
-
-  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newVolume = parseFloat(e.target.value);
-    video.volume = newVolume;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isMuted) {
-      video.volume = volume || 0.5;
-      setIsMuted(false);
-    } else {
-      video.volume = 0;
-      setIsMuted(true);
-    }
-  };
-
-  const toggleFullscreen = () => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    if (!isFullscreen) {
-      if (container.requestFullscreen) {
-        container.requestFullscreen();
-        setIsFullscreen(true);
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    }
-  };
-
-  const changePlaybackRate = (rate: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.playbackRate = rate;
-    setPlaybackRate(rate);
-    setShowSettings(false);
-  };
-
-  const changeQuality = (levelIndex: number) => {
-    if (hlsRef.current) {
-      hlsRef.current.currentLevel = levelIndex;
-      setQuality(levelIndex);
-      setShowSettings(false);
-    }
-  };
-
-  const skip = (seconds: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newTime = Math.max(0, Math.min(duration, video.currentTime + seconds));
-    video.currentTime = newTime;
-
-    // Обновляем последнее отслеженное время при скипе
-    lastTrackedTimeRef.current = Math.floor(newTime / 10) * 10;
-  };
-
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00';
-
-    const hours = Math.floor(time / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
-    const seconds = Math.floor(time % 60);
-
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const retryVideo = () => {
-    setHasError(false);
-    setIsLoading(true);
-
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-
-    const video = videoRef.current;
-    if (!video || !url) return;
-
-    video.src = '';
-    video.load();
-
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        debug: false,
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 90,
-        startLevel: quality,
-      });
-
-      hls.loadSource(url);
-      hls.attachMedia(video);
-
-      hlsRef.current = hls;
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setDuration(video.duration);
-        video.currentTime = lastWatchedTime;
-        if (hls.levels) {
-          const levels = hls.levels.map((l, i) => ({
-            label: `${l.height}p`,
-            value: i,
-          }));
-          levels.unshift({ label: 'Auto', value: -1 });
-          setAvailableQualities(levels);
-        }
-      });
-
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        console.error('HLS error on retry:', data.type, data.details, data);
-        if (data.fatal) {
-          setHasError(true);
-        }
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = url;
-      video.load();
-    }
-  };
-
-  const showControlsTemporarily = () => {
-    setShowControls(true);
-    if (controlsTimeout) {
-      clearTimeout(controlsTimeout);
-    }
-    const timeout = setTimeout(() => {
-      if (isVideoPlaying) {
-        setShowControls(false);
-      }
-    }, 5000);
-    setControlsTimeout(timeout);
-  };
-
-  const handleMouseMove = () => {
-    showControlsTemporarily();
-  };
-
   return (
     <div
-      ref={containerRef}
-      className="relative w-full h-[80dvh] md:h-[430px] md:w-[760px] bg-black rounded-lg overflow-hidden group"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => isVideoPlaying && setShowControls(false)}
+      key={url}
+      className="w-full max-w-[760px] mx-auto rounded-lg overflow-hidden shadow-lg bg-black"
     >
-      {/* Видео элемент */}
-      <video
-        ref={videoRef}
-        className="w-full h-full object-contain"
-        onClick={togglePlay}
-        style={{ aspectRatio: '16/9' }}
-        playsInline
-        controls={false} // Отключаем стандартные элементы управления
-        crossOrigin="anonymous"
-      />
-
-      {/* Индикатор загрузки */}
-      {isLoading && !hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-
-      {/* Сообщение об ошибке */}
-      {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="text-center">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h3 className="text-white text-xl mb-2">Video yüklənmə xətası</h3>
-            <p className="text-gray-300 text-sm mb-4">URL-i yoxlayın və ya sonra cəhd edin</p>
-            <button
-              onClick={retryVideo}
-              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
-            >
-              Yenidən cəhd et
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Центральная кнопка воспроизведения */}
-      {!isVideoPlaying && !isLoading && !hasError && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <button
-            onClick={togglePlay}
-            className="w-20 h-20 rounded-full bg-red-500 bg-opacity-90 hover:bg-opacity-100 flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer"
-          >
-            <Play className="w-10 h-10 text-white ml-1" />
-          </button>
-        </div>
-      )}
-
-      {/* Панель управления */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 transition-all duration-300 ${
-          showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
-        }`}
-      >
-        {/* Прогресс бар */}
-        <div className="mb-4">
-          <input
-            type="range"
-            min="0"
-            max={duration || 0}
-            value={currentTime}
-            onChange={handleSeek}
-            className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
-            style={{
-              background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${(currentTime / duration) * 100 || 0}%, #4b5563 ${(currentTime / duration) * 100 || 0}%, #4b5563 100%)`,
-            }}
-          />
-        </div>
-
-        {/* Основные элементы управления */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            {/* Кнопка воспроизведения/паузы */}
-            <button
-              onClick={togglePlay}
-              className="text-white hover:text-red-500 transition-colors cursor-pointer"
-            >
-              {isVideoPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-            </button>
-
-            {/* Перемотка */}
-            <button
-              onClick={() => skip(-10)}
-              className="text-white hidden md:block hover:text-red-500 transition-colors cursor-pointer"
-            >
-              <SkipBack className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={() => skip(10)}
-              className="text-white hidden md:block hover:text-red-500 transition-colors cursor-pointer"
-            >
-              <SkipForward className="w-5 h-5" />
-            </button>
-
-            {/* Громкость */}
-            <div className=" hidden md:flex items-center space-x-2">
-              <button
-                onClick={toggleMute}
-                className="text-white hover:text-red-500 transition-colors cursor-pointer"
-              >
-                {isMuted || volume === 0 ? (
-                  <VolumeX className="w-5 h-5" />
-                ) : (
-                  <Volume2 className="w-5 h-5" />
-                )}
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={isMuted ? 0 : volume}
-                onChange={handleVolumeChange}
-                className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
-            {/* Время */}
-            <div className="text-white text-sm">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            {/* Настройки */}
-            <div className="relative">
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="text-white mt-2 hover:text-red-500 transition-colors cursor-pointer"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-
-              {/* Меню настроек */}
-              {showSettings && (
-                <div
-                  ref={settingsRef}
-                  className="absolute max-h-[250px] overflow-y-auto bottom-8 right-0 bg-black bg-opacity-95 rounded-lg p-4 min-w-48 z-50 border border-gray-700"
-                  onClick={e => e.stopPropagation()} // Предотвращаем всплытие события
-                >
-                  <div className="mb-4">
-                    <h3 className="text-white text-sm font-semibold mb-2">Sürət</h3>
-                    <div className="space-y-1">
-                      {playbackRates.map(rate => (
-                        <button
-                          key={rate}
-                          onClick={() => changePlaybackRate(rate)}
-                          className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
-                            playbackRate === rate
-                              ? 'text-red-500 bg-red-500 bg-opacity-20'
-                              : 'text-white hover:text-red-500 hover:bg-gray-800'
-                          }`}
-                        >
-                          {rate}x
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-white text-sm font-semibold mb-2">Keyfiyyət</h3>
-                    <div className="space-y-1">
-                      {/* Просто рендерим доступные качества, когда они есть */}
-                      {availableQualities.map(q => (
-                        <button
-                          key={q.value}
-                          onClick={() => changeQuality(q.value)}
-                          className={`block w-full text-left px-2 py-1 text-sm rounded transition-colors cursor-pointer ${
-                            quality === q.value // Теперь это корректное сравнение number === number
-                              ? 'text-red-500 bg-red-500 bg-opacity-20'
-                              : 'text-white hover:text-red-500 hover:bg-gray-800'
-                          }`}
-                        >
-                          {q.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Полноэкранный режим */}
-            <button
-              onClick={toggleFullscreen}
-              className="text-white hover:text-red-500 transition-colors cursor-pointer"
-            >
-              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </div>
+      <video ref={videoRef} className="plyr-react plyr" crossOrigin="anonymous" playsInline />
     </div>
   );
 };
 
-const MemoizedVideoPlayer = memo(VideoPlayer);
-
-export default MemoizedVideoPlayer;
+export default VideoPlayer;
