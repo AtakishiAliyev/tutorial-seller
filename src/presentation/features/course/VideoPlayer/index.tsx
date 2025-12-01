@@ -1,7 +1,8 @@
 import 'plyr/dist/plyr.css';
+import './VideoPlayer.css';
 
 import useSaveLessonProgress from '@business/services/course/useSaveLessonProgress.ts';
-import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore';
+import { useWatchCourseStore } from '@business/services/course/useWatchCourseStore.ts';
 import { Lesson } from '@infra/dto/course/GetCourseDetailDto.ts';
 import Hls from 'hls.js';
 // @ts-expect-error Plyr import is correct
@@ -14,7 +15,7 @@ type CustomVideoPlayerProps = {
   lastWatchedTime?: number;
 };
 
-const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTime = 0 }) => {
+const Index: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTime = 0 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const plyrRef = useRef<Plyr | null>(null);
@@ -44,21 +45,26 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
     isCompletedRef.current = currentLesson?.userProgresses?.isCompleted || false;
     lastTrackedTimeRef.current = lastWatchedTime;
 
+    const isMobile = window.innerWidth < 640;
+
+    // Формируем список контролов динамически
+    const controls = [
+      'play-large',
+      'play',
+      'progress',
+      'current-time',
+      'duration',
+      !isMobile && 'mute',
+      !isMobile && 'volume',
+      'captions',
+      'settings',
+      'pip',
+      'airplay',
+      'fullscreen',
+    ].filter(Boolean) as string[];
+
     const defaultOptions: Plyr.Options = {
-      controls: [
-        'play-large',
-        'play',
-        'progress',
-        'current-time',
-        'duration',
-        'mute',
-        'volume',
-        'captions',
-        'settings',
-        'pip',
-        'airplay',
-        'fullscreen',
-      ],
+      controls: controls, // Передаем наш отфильтрованный список
       settings: ['captions', 'quality', 'speed'],
       speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
       autoplay: false,
@@ -193,6 +199,6 @@ const VideoPlayer: FC<CustomVideoPlayerProps> = ({ url, lessonId, lastWatchedTim
   );
 };
 
-const MemoizedVideoPlayer = memo(VideoPlayer);
+const MemoizedVideoPlayer = memo(Index);
 
 export default MemoizedVideoPlayer;
