@@ -30,8 +30,6 @@ const BuyCourseModal: FC<BuyCourseModalProps> = ({ meta, isOpen = false, onClose
     isSuccess,
   } = useCreateCreditRequestContract();
 
-  console.log('IsSuccess', isSuccess);
-
   const {
     register,
     formState: { errors },
