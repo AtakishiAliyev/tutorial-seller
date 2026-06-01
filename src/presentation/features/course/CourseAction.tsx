@@ -1,33 +1,36 @@
 import 'react-loading-skeleton/dist/skeleton.css';
 
 import useIsCourseOwned from '@business/services/course/useIsCourseOwned.ts';
+import { useBuyCourseContract } from '@presentation/contracts/course/BuyCourseContract.tsx';
 import Button from '@presentation/shared/ui/Button';
 import ErrorBox from '@presentation/shared/ui/ErrorBox.tsx';
 import { FC, memo, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import { useVisibilityActions } from 'react-visibility-manager';
 
 type CourseActionProps = {
   courseSlug: string;
-  courseName: string; // prop courseName не использовался, но я его оставил
+  courseName: string; // Оставил, как вы и просили, хотя для прямой покупки он может уже не понадобиться
   courseId: string;
 };
 
 const CourseAction: FC<CourseActionProps> = props => {
-  const { courseSlug, courseId, courseName } = props;
-  const { loading, error, isOwned } = useIsCourseOwned(props);
-  const { set } = useVisibilityActions();
+  const { courseSlug } = props;
 
+  // 1. Состояние владения курсом
+  const { loading: ownershipLoading, error, isOwned } = useIsCourseOwned(props);
+
+  // 2. Достаем метод покупки из контекста (который мы обернули в BuyCourseWidget)
+  const { buyCourse, loading: buyLoading } = useBuyCourseContract();
+
+  // Прямой вызов покупки без всяких модалок
   const handleBuyCourse = useCallback(async () => {
-    set('buy-course', true, {
-      courseId,
-      courseSlug,
-      courseName,
-    });
-  }, [courseId, courseName, courseSlug, set]);
+    if (courseSlug) {
+      await buyCourse(courseSlug);
+    }
+  }, [buyCourse, courseSlug]);
 
-  // 1. Обработка состояний загрузки и ошибок
-  if (loading) {
+  // Обработка состояний загрузки владения курсом и ошибок
+  if (ownershipLoading) {
     return <Skeleton height={44} width="100%" borderRadius={8} />;
   }
 
@@ -44,7 +47,7 @@ const CourseAction: FC<CourseActionProps> = props => {
     );
   }
 
-  // 2. Главный "счастливый путь": пользователь владеет курсом и он активен
+  // Главный "счастливый путь": пользователь владеет курсом и он активен
   if (isOwned?.isOwned && isOwned.isActive) {
     return (
       <Button variant="primary" to={`/courses/watch/${courseSlug}`} className="w-full">
@@ -53,9 +56,8 @@ const CourseAction: FC<CourseActionProps> = props => {
     );
   }
 
-  // 3. Пользователь владеет курсом, но он неактивен
+  // Пользователь владеет курсом, но он неактивен
   if (isOwned?.isOwned && !isOwned.isActive) {
-    // Проверяем статус платежа, чтобы показать нужную кнопку
     if (isOwned.payment?.status === 'APPROVED') {
       return (
         <Button variant="primary" disabled={true} className="w-full">
@@ -64,21 +66,28 @@ const CourseAction: FC<CourseActionProps> = props => {
       );
     } else {
       return (
-        <Button variant="primary" onClick={handleBuyCourse} className="w-full">
-          Kursu indi al
+        <Button
+          variant="primary"
+          onClick={handleBuyCourse}
+          disabled={buyLoading}
+          className="w-full"
+        >
+          {buyLoading ? 'Yüklənir...' : 'Kursu indi al'}
         </Button>
       );
     }
   }
 
+  // У пользователя нет курса
   if (isOwned?.isOwned === false) {
     return (
       <Button
         onClick={handleBuyCourse}
         variant="primary"
-        className="w-full flex items-center gap-2"
+        disabled={buyLoading}
+        className="w-full flex items-center justify-center gap-2"
       >
-        Kursu indi al
+        {buyLoading ? 'Yüklənir...' : 'Kursu indi al'}
       </Button>
     );
   }
@@ -89,3 +98,4 @@ const CourseAction: FC<CourseActionProps> = props => {
 const MemoizedCourseAction = memo(CourseAction);
 
 export default MemoizedCourseAction;
+
